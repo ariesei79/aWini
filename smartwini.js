@@ -6,14 +6,33 @@ const port = 80
 const bodyParser = require("body-parser")
 const redis = require("redis")
 const cors = require("cors")
+const sql = require("mssql");
 
 app.use(
   cors({
     origin: "*",
   })
 )
+const config = {
+  user: "oee",
+  password: "oee",
+  server: "172.17.44.106",
+  database: "GRWINI",
+  options: {
+    encrypt: false,
+    trustServerCertificate: true,
+    enableArithAbort: true,
+  },
+};
 
-// Setup Redis client
+sql.connect(config)
+  .then(pool => {
+    global.dbPool = pool;
+    console.log("Connected to SQL Server");
+  })
+  .catch(err => {
+    console.log("Gagal koneksi Sql")
+  });
 
 //tambahan dari arie
 const sqlite3 = require("sqlite3").verbose()
