@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="all.css">
+
+    <title>PE PCR STATUS KANBAN BOARD MONITORING</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type="text/css">
+<!--
+body,td,th {
+	font-family: Trebuchet MS, Arial, Helvetica, sans-serif;
+}
+body {
+	background-image: url(../img/dash-bg-03.jpg);
+}
+.Footer {
+	text-align: center;
+	font-size: 18px;
+	color: #FF0;
+	font-weight: bold;
+}
+-->
+</style></head>
+
+
+<header>
+        <h1>PE PCR STATUS KANBAN BOARD MONITORING</h1>
+    </header>
+    <div id="form-container">
+        <form>
+          <input type="text" id="input" maxlength="300" placeholder="Input Judul PCR" autocomplete="off">
+          <button><img src="faplus.png" width="51" height="40"></i></button>
+      </form>
+    </div>
+    <div class="container-main">
+        <div class="container" id="container-todo">
+            <h1 class="container-main">New item</h1>
+        </div>
+	<div class="container" id="container-Approve">
+            <h1>QA Approve</h1>
+            <h1> ready mp</h1>
+</div>
+        <div class="container" id="container-doing">
+            <h1>1st Mp</h1>
+        </div>
+<div class="container" id="container-mp1">
+            <h1>2nd Mp</h1>
+      </div>
+<div class="container" id="container-mp2">
+            <h1>3rd Mp</h1>
+      </div>
+        <div class="container" id="container-done">
+            <h1>Close</h1>
+          <p>&nbsp;</p>
+          <p>&nbsp;</p>
+        </div>
+</div>
+       <h1 class="Footer">&nbsp;</h1>
+       <h1 class="Footer">&nbsp;</h1>
+       <h1 class="Footer">&nbsp;</h1>
+       <h1 class="Footer"><a href="../index.html"><img src="file:../icon/home.jpg" width="56" height="37" alt="Home"></a></h1>
+       <p class="Footer">HOME</p>
+<script>const draggables = document.querySelectorAll(".draggable");
+const containers = document.querySelectorAll(".container");
+const form = document.querySelector("form");
+const input = document.querySelector("#input");
+const getTodos = JSON.parse(localStorage.getItem("todos"));
+
+let todos = getTodos !== null ? getTodos : [];
+
+addTodos();
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  createTodo();
+  input.value = "";
+});
+
+function createTodo() {
+  if (input.value.trim() == "") {
+    return;
+  }
+
+  const todo = {
+    value: input.value,
+    id: generateId(),
+    container: "container-todo",
+  };
+
+  todos.push(todo);
+  setLocalStorage();
+  addTodos();
+}
+
+function addTodos() {
+  containers.forEach((container) => {
+    container.innerHTML = `<h1>${container.firstElementChild.textContent}</h1>`;
+  });
+  todos.forEach((todo) => {
+    const div = document.createElement("div");
+    div.classList.add("draggable");
+    div.draggable = true;
+    div.innerHTML = todo.value;
+    div.id = todo.id;
+
+    div.addEventListener("dragstart", () => {
+      div.classList.add("dragging");
+      containers.forEach((container) => {
+        container.classList.add("over");
+        if (container.id == todo.container) {
+          container.classList.remove("over");
+        }
+      });
+    });
+
+    div.addEventListener("dragend", () => {
+      div.classList.remove("dragging");
+      containers.forEach((container) => {
+        container.classList.remove("over");
+      });
+    });
+
+    div.appendChild(createBt(div, todo.id));
+    document.querySelector(`#${todo.container}`).append(div);
+  });
+}
+
+function generateId() {
+  return Math.round(Math.random() * 1000);
+}
+
+function createBt(div, ID) {
+  const bt = document.createElement("button");
+  bt.classList.add("bt");
+  bt.innerHTML = '<img src="trash.png" width="15" height="20"></i>';
+  bt.addEventListener("click", () => {
+    todos = todos.filter((todo) => todo.id !== ID);
+
+    div.classList.add("remove");
+
+    setTimeout(() => {
+      addTodos();
+      setLocalStorage();
+    }, 700);
+  });
+
+  return bt;
+}
+
+function setLocalStorage() {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+containers.forEach((container) => {
+  container.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    const dragable = document.querySelector(".dragging");
+    todos.forEach((todo) => {
+      if (todo.id == dragable.id) {
+        todo.container = container.id;
+        setLocalStorage();
+      }
+    });
+    const afterElement = dragAfter(container, e.clientY);
+    if (afterElement == null) {
+      container.appendChild(dragable);
+    } else {
+      container.insertBefore(dragable, afterElement);
+    }
+  });
+});
+
+function dragAfter(container, y) {
+  const draggableElements = [
+    ...container.querySelectorAll(".draggable:not(.dragging)"),
+  ];
+
+  return draggableElements.reduce(
+    (closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    },
+    {
+      offset: Number.NEGATIVE_INFINITY,
+    }
+  ).element;
+}
+</script>
+</body>
+
+</html>

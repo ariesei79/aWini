@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/ico" href="favicon.ico" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Process Engineering Section</title>
+  </head>
+  <body>
+    <h1 class="main-title">Willy Kanban Board</h1>
+    <div class="drag-container">
+      <ul class="drag-list">
+        <li class="drag-column widibacklog-column">
+          <span class="header">
+            <h1>Backlog</h1>
+          </span>
+          <div id="widibacklog-content" class="custom-scroll">
+            <!-- !insert tasks in ul-->
+            <ul class="drag-item-list" id="widibacklogList"></ul>
+          </div>
+          <div class="add-btn-group">
+            <div class="add-btn">
+              <span class="plus-sign">+</span>
+              <span>Add Item</span>
+            </div>
+            <div class="add-btn solid">
+              <span>Save Item</span>
+            </div>
+          </div>
+          <div class="add-container">
+            <div class="add-item" contenteditable="true"></div>
+          </div>
+        </li>
+
+        <li class="drag-column widiprogress-column">
+          <span class="header">
+            <h1>Progress</h1>
+          </span>
+          <div id="progress-content" class="custom-scroll">
+            <!-- !insert tasks in ul-->
+            <ul class="drag-item-list" id="widiprogressList"></ul>
+          </div>
+          <div class="add-btn-group">
+            <div class="add-btn">
+              <span class="plus-sign">+</span>
+              <span>Add Item</span>
+            </div>
+            <div class="add-btn solid">
+              <span>Save Item</span>
+            </div>
+          </div>
+          <div class="add-container">
+            <div class="add-item" contenteditable="true"></div>
+          </div>
+        </li>
+
+        <li class="drag-column widicomplete-column">
+          <span class="header">
+            <h1>Complete</h1>
+          </span>
+          <div id="widicomplete-content" class="custom-scroll">
+            <!-- !insert tasks in ul-->
+            <ul class="drag-item-list" id="widicompleteList"></ul>
+          </div>
+          <div class="add-btn-group">
+            <div class="add-btn">
+              <span class="plus-sign">+</span>
+              <span>Add Item</span>
+            </div>
+            <div class="add-btn solid">
+              <span>Save Item</span>
+            </div>
+          </div>
+          <div class="add-container">
+            <div class="add-item" contenteditable="true"></div>
+          </div>
+        </li>
+
+        <li class="drag-column widion-hold-column">
+          <span class="header">
+            <h1>On-hold</h1>
+          </span>
+          <div id="widion-hold-content" class="custom-scroll">
+            <!-- !insert tasks in ul-->
+            <ul class="drag-item-list" id="widionHoldList"></ul>
+          </div>
+          <div class="add-btn-group">
+            <div class="add-btn">
+              <span class="plus-sign">+</span>
+              <span>Add Item</span>
+            </div>
+            <div class="add-btn solid">
+              <span>Save Item</span>
+            </div>
+          </div>
+          <div class="add-container">
+            <div class="add-item" contenteditable="true"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Script -->
+    <script>const addBtns = document.querySelectorAll('.add-btn:not(.solid)');
+const saveItemBtns = document.querySelectorAll('.solid');
+const addItemContainers = document.querySelectorAll('.add-container');
+const addItems = document.querySelectorAll('.add-item');
+// Columns
+const allColumnsUl = document.querySelectorAll('.drag-item-list');
+const widibacklogList = document.getElementById('widibacklogList');
+const widiprogressList = document.getElementById('widiprogressList');
+const widicompleteList = document.getElementById('widicompleteList');
+const widionHoldList = document.getElementById('widionHoldList');
+
+// State of project
+let widibacklogListArray = [];
+let widiprogressListArray = [];
+let widicompleteListArray = [];
+let widionHoldListArray = [];
+let listArrays = [];
+
+// Drag Functionality
+let draggedItem;
+
+// Starts dragging
+const drag = (e) => {
+  draggedItem = e.target;
+};
+
+// Allows item to be dropped
+const allowDrop = (e) => {
+  e.preventDefault();
+};
+
+//When you drag over ul column
+const dragEnter = (column) => {
+  allColumnsUl[column].classList.add('over');
+};
+
+//When you drag out of ul column
+const dragLeave = (column) => {
+  allColumnsUl[column].classList.remove('over');
+};
+
+const changeArrayHelper = (nameArray, list) => {
+  if (nameArray.length !== list.children.length) {
+    nameArray.length = 0;
+    for (let item of list.children) {
+      nameArray.push(item.innerText);
+    }
+  }
+  // Updating array if you click and updated text(contentEditable)
+  for (let i = 0; i < nameArray.length; i++) {
+    if (nameArray[i] !== list.children[i].innerText) {
+      nameArray.splice(i, 1, list.children[i].innerText);
+    }
+  }
+};
+
+// Set localStorage Arrays
+const arraysSendToLocalStorage = () => {
+  listArrays = [
+    widibacklogListArray,
+    widiprogressListArray,
+    widicompleteListArray,
+    widionHoldListArray,
+  ];
+
+  const arrayNames = ['widibacklog', 'widiprogress', 'widicomplete', 'widionHold'];
+
+  listArrays.forEach((array, idx) => {
+    localStorage.setItem(`${arrayNames[idx]}Items`, JSON.stringify(array));
+  });
+};
+
+//Arrays now reflect drag and drop changes
+const updateStateArrays = () => {
+  changeArrayHelper(widibacklogListArray, widibacklogList);
+  changeArrayHelper(widiprogressListArray, widiprogressList);
+  changeArrayHelper(widicompleteListArray, widicompleteList);
+  changeArrayHelper(widionHoldListArray, widionHoldList);
+  arraysSendToLocalStorage();
+};
+
+// Dropping item
+const drop = (e, column) => {
+  e.preventDefault();
+  allColumnsUl[column].classList.remove('over');
+  //Add item to column
+  const parent = allColumnsUl[column];
+  parent.appendChild(draggedItem);
+
+  updateStateArrays();
+};
+
+// listeners for dragging functionality
+const addDragNDropListeners = () => {
+  allColumnsUl.forEach((ul, idx) => {
+    ul.addEventListener('dragover', allowDrop);
+    ul.addEventListener('dragenter', () => dragEnter(idx));
+    ul.addEventListener('dragleave', () => dragLeave(idx));
+    ul.addEventListener('drop', (e) => drop(e, idx));
+  });
+};
+
+// Get Arrays from localStorage if available, set default values if not
+const getSavedColumns = () => {
+  if (localStorage.getItem('widibacklogItems')) {
+    widibacklogListArray = JSON.parse(localStorage.widibacklogItems);
+    widiprogressListArray = JSON.parse(localStorage.widiprogressItems);
+    widicompleteListArray = JSON.parse(localStorage.widicompleteItems);
+    widionHoldListArray = JSON.parse(localStorage.widionHoldItems);
+  }
+};
+
+// Create DOM Elements for each list item
+const createItemEl = (ulToAppend, item) => {
+  // List Item
+  const listEl = document.createElement('li');
+  listEl.classList.add('drag-item');
+  listEl.innerText = item;
+
+  //Making text editable (if edited synch with arrays of data)
+  listEl.contentEditable = true;
+  listEl.addEventListener('focusout', (e) => {
+    if (e.target.innerText.length === 0 || e.target.innerText === '\n') {
+      e.target.remove();
+    }
+
+    updateStateArrays();
+  });
+
+  // Making draggable
+  listEl.draggable = true;
+  listEl.addEventListener('dragstart', drag);
+
+  ulToAppend.appendChild(listEl);
+};
+
+// Creating columns based on arrays in localstorage
+const updateDOM = () => {
+  // Check localStorage once
+  getSavedColumns();
+
+  widibacklogListArray.forEach((text) => {
+    createItemEl(widibacklogList, text);
+  });
+  widiprogressListArray.forEach((text) => {
+    createItemEl(widiprogressList, text);
+  });
+  widicompleteListArray.forEach((text) => {
+    createItemEl(widicompleteList, text);
+  });
+  widionHoldListArray.forEach((text) => {
+    createItemEl(widionHoldList, text);
+  });
+};
+
+updateDOM();
+addDragNDropListeners();
+
+//Listeners+Buttons functionality
+const addText = (text, column) => {
+  if (text.length) {
+    createItemEl(allColumnsUl[column], text);
+    updateStateArrays();
+  }
+  addItems[column].innerText = '';
+};
+
+const showInputBox = (column) => {
+  addBtns[column].style.visibility = 'hidden';
+  saveItemBtns[column].style.display = 'flex';
+  addItemContainers[column].style.display = 'flex';
+};
+
+const hideInputBox = (column) => {
+  addBtns[column].style.visibility = 'visible';
+  saveItemBtns[column].style.display = 'none';
+  addItemContainers[column].style.display = 'none';
+  addText(addItems[column].innerText, column);
+};
+
+//Add + Save button listeners
+const addItemListeners = () => {
+  addBtns.forEach((item, idx) => {
+    item.addEventListener('click', () => showInputBox(idx));
+  });
+};
+
+const addSaveListeners = () => {
+  saveItemBtns.forEach((item, idx) => {
+    item.addEventListener('click', () => hideInputBox(idx));
+  });
+};
+
+addItemListeners();
+addSaveListeners();
+</script>
+  </body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+  <title>Excel Search Across Sheets</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f8;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #003366;
+    }
+
+    input[type="file"],
+    input[type="text"] {
+      padding: 10px;
+      margin: 5px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin: 5px; /* Tambahkan margin agar tidak terlalu rapat */
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    #status {
+      margin: 15px 0;
+      font-weight: bold;
+      color: #0077cc;
+    }
+
+    #result {
+      margin-top: 20px;
+      max-height: 400px;
+      overflow: auto;
+      border: 2px solid #0077cc;
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #0077cc;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s;
+    }
+
+    .modal-box {
+      background: linear-gradient(145deg, #ffffff, #e6e6e6);
+      padding: 20px; /* Padding dengan tinggi sama */
+      width: 600px; /* Ukuran modal tetap sama */
+      border: 2px solid #0077cc;
+      border-radius: 12px;
+      text-align: left; 
+      box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2), 
+                  -5px -5px 15px rgba(255, 255, 255, 0.7);
+      position: relative;
+    }
+
+    .modal-box .logo {
+      width: 100px;
+      margin-bottom: 10px;
+      display: block;  
+      margin-left: auto; 
+      margin-right: auto; 
+    }
+
+    .modal-box p {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #0077cc;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 15px auto;
+      border: 5px solid #ccc;
+      border-top: 5px solid #0077cc;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* Modal Pencarian */
+    .waiting-modal {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Cari Data dari Excel</h1>
+  <input type="file" id="upload" accept=".xlsx, .xls" />
+  <input type="text" id="search" placeholder="Masukkan teks pencarian" />
+  <button id="searchButton">Cari</button>
+  <button id="exportExcelButton">Ekspor ke Excel</button>
+  <button id="exportPdfButton">Ekspor ke PDF</button>
+  
+  <div id="status"></div>
+  <div id="result"></div>
+
+  <!-- Modal Upload -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <button class="close-modal" id="closeModal">&times;</button>
+      <img src="icon/sumitomo.png" alt="Logo Sumitomo" class="logo">
+      <div id="loadingMessage">
+        <p>⏳ Harap tunggu, memproses file...</p>
+        <p>⏳ しばらくお待ちください。ファイルを処理しています...</p>
+        <p>⏳ Please wait, processing file...</p>
+      </div>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- Modal Menunggu Pencarian -->
+  <div class="modal-overlay waiting-modal" id="waitingModal">
+    <div class="modal-box">
+      <img src="icon/cari.gif" alt="Mencari" style="display: block; margin: 0 auto 10px; width: 100px;">
+      <p>Sedang mencari hasil, harap tunggu...</p>
+      <p>結果を検索中、しばらくお待ちください...</p>
+      <p>Searching for results, please wait...</p>
+    </div>
+  </div>
+
+  <script>
+    let globalData = [];
+    let headers = [];
+
+    const modal = document.getElementById('modalOverlay');
+    const closeModal = document.getElementById('closeModal');
+    const waitingModal = document.getElementById('waitingModal');
+
+    document.getElementById('upload').addEventListener('change', handleFile, false);
+    document.getElementById('searchButton').addEventListener('click', search);
+    document.getElementById('search').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        search(); // Panggil fungsi pencarian ketika Enter ditekan
+      }
+    });
+
+    document.getElementById('exportExcelButton').addEventListener('click', exportToExcel);
+    document.getElementById('exportPdfButton').addEventListener('click', exportToPDF);
+    
+    closeModal.addEventListener('click', () => modal.style.display = "none"); // Menutup modal
+
+    async function handleFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      modal.style.display = "flex"; // Tampilkan modal upload
+
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+
+        globalData = []; // Reset globalData
+        headers = []; // Reset headers
+
+        for (let index = 0; index < workbook.SheetNames.length; index++) {
+          const sheetName = workbook.SheetNames[index];
+          const sheet = workbook.Sheets[sheetName];
+          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+          if (sheetData.length > 0) {
+            if (index === 0) headers = sheetData[0]; // Ambil header dari sheet pertama
+            globalData = globalData.concat(sheetData.slice(1)); // Ambil data tanpa header
+          }
+        }
+
+        modal.style.display = "none"; // Sembunyikan modal upload
+        document.getElementById('status').innerText = "✅ File berhasil diunggah. Silakan lakukan pencarian.";
+        document.getElementById('result').innerHTML = ""; // Kosongkan hasil
+      };
+
+      reader.readAsArrayBuffer(file); // Mulai membaca file
+    }
+
+    async function search() {
+      const searchTerm = document.getElementById('search').value.toLowerCase();
+      const resultDiv = document.getElementById('result');
+      const statusDiv = document.getElementById('status');
+
+      resultDiv.innerHTML = ""; // Kosongkan hasil
+      statusDiv.innerText = ""; // Kosongkan status
+
+      if (globalData.length === 0) {
+        resultDiv.innerHTML = "<p style='padding:20px;'>❌ Silakan unggah file Excel terlebih dahulu.</p>";
+        return;
+      }
+
+      // Tampilkan modal menunggu pencarian
+      waitingModal.style.display = "flex";
+
+      await new Promise(resolve => {
+        setTimeout(() => {
+          resolve();
+        }, 1000); // Simulasi waktu tunggu
+      });
+
+      const foundRows = globalData.filter(row =>
+        row.some(cell => cell.toString().toLowerCase().includes(searchTerm))
+      );
+
+      // Sembunyikan modal menunggu pencarian
+      waitingModal.style.display = "none";
+
+      if (foundRows.length > 0) {
+        let table = "<table><thead><tr>";
+        headers.forEach(header => {
+          table += `<th>${header}</th>`;
+        });
+        table += "</tr></thead><tbody>";
+
+        foundRows.forEach(row => {
+          table += "<tr>";
+          row.forEach(cell => {
+            table += `<td>${cell}</td>`;
+          });
+          table += "</tr>";
+        });
+
+        table += "</tbody></table>";
+        resultDiv.innerHTML = table;
+        statusDiv.innerText = `🔍 Ditemukan ${foundRows.length} hasil dari pencarian.`;
+        document.getElementById('search').value = "";
+      } else {
+        resultDiv.innerHTML = "<p style='padding:20px;'>😕 Tidak ada hasil yang ditemukan.</p>";
+        statusDiv.innerText = "Silakan coba dengan kata kunci lain.";
+      }
+    }
+
+    function exportToExcel() {
+      const results = document.getElementById('result');
+      const sheet = XLSX.utils.table_to_sheet(results.querySelector("table"));
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, sheet, "Hasil Pencarian");
+      XLSX.writeFile(workbook, "hasilpencarian.xlsx");
+    }
+
+    async function exportToPDF() {
+      const results = document.getElementById('result');
+      const pdf = new jsPDF();
+
+      const headers = Array.from(results.querySelectorAll("th")).map(th => th.innerText);
+      const rows = Array.from(results.querySelectorAll("tbody tr")).map(tr => {
+        return Array.from(tr.children).map(td => td.innerText);
+      });
+
+      pdf.autoTable({
+        head: [headers],
+        body: rows,
+      });
+      
+      pdf.save("hasilpencarian.pdf");
+    }
+  </script>
+</body>
+</html>

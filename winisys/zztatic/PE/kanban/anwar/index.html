@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>PE ACTIVITY PLAN</title>
+  <script>
+
+/*** FUNCTIONS ***/
+
+function elem(id){
+  var e = document.getElementById(id);
+  return e;
+}
+
+function allowDrop(ev) {
+	ev.preventDefault();
+}
+
+function drag(ev) {
+	ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev, el) {
+	ev.preventDefault();
+	var data = ev.dataTransfer.getData("text");
+	el.appendChild(elem(data));
+	elem(data).removeAttribute('style');
+	el.classList.remove('drag-enter');
+	countTask();
+	saveBoards();
+}
+
+function dragEnter(e){
+	e.target.classList.add('drag-enter');
+}
+
+function dragLeave(e){
+	e.target.classList.remove('drag-enter');
+}
+
+function delTaskDrop(){
+	var elemt = elem("delete-list");
+	elemt.innerHTML = '';
+}
+
+function changeTask(){
+	var taskList = document.querySelectorAll('.txt');
+	for(i=0;i<taskList.length;i++){
+		taskList[i].onclick = function() {	
+			showModal();
+			okModal(this.parentNode.id);
+		}
+	}
+}
+
+function showModal(){
+	var modalBox = elem('modalBox');
+	modalBox.style.display='block';
+	var modalOverlay = elem('modalOverlay');
+	modalOverlay.style.display='block';
+}
+
+function okModal(id){
+	var newText =  elem('taskText');
+	var theTask = elem(id);
+	var theTaskStyle = elem(id).parentNode.id;
+	console.log(theTaskStyle);
+	elem('modalBox').setAttribute('class','b-'+theTaskStyle)
+	newText.value = theTask.childNodes[0].innerText;
+	newText.select();
+	globalID = id;	
+}
+
+function closeModal(){
+	var modalBox = elem('modalBox');
+	modalBox.style.display='none';
+	var modalOverlay = elem('modalOverlay');
+	modalOverlay.style.display='none';
+}
+// var closeBox = elem('modalClose');
+// closeBox.onclick=closeModal;
+// var closeOverlay = elem('modalOverlay');
+// closeOverlay.onclick=closeModal;
+
+
+function upListener(e) {
+	e.preventDefault();
+	var wrapper = this.parentElement;
+	if (wrapper.previousElementSibling){
+		wrapper.parentNode.insertBefore(wrapper, wrapper.previousElementSibling);
+		saveBoards();
+	}
+}
+
+
+function downListener(e) {
+	e.preventDefault();
+	var wrapper = this.parentElement;
+	if (wrapper.nextElementSibling){
+		wrapper.parentNode.insertBefore(wrapper.nextElementSibling, wrapper);
+		saveBoards();
+	}
+}
+
+
+function saveBoards(){
+	var toDoContent = elem('ul-todo').innerHTML;
+	var workInContent = elem('ul-working').innerHTML;
+	var doneContent = elem('ul-done').innerHTML;
+	localStorage.setItem('listToDo',toDoContent);
+	localStorage.setItem('listWorking',workInContent);
+	localStorage.setItem('listDone',doneContent);
+	if(elem('ul-urgent') !== null){	
+		var urgentContent = elem('ul-urgent').innerHTML;
+		localStorage.setItem('listUrgent',urgentContent);
+	} else {
+		localStorage.removeItem('listUrgent');
+	}
+}
+	
+	
+//change opacity
+function showOpac(val){
+	var zeroDot = '0.';
+	var boardOpacNum = document.querySelectorAll('#myLists > div');
+	for(var i = 0; i<boardOpacNum.length; i++){
+		if(val=='10') zeroDot = ''; 
+		boardOpacNum[i].style.background = 'rgb(247 247 247 / '+zeroDot+val;
+	}
+	localStorage.setItem('OptOpacityLevel',val);
+}
+	
+	
+//delete task
+function delTask(ev,elemt){
+	ev.preventDefault();
+	if(localStorage.getItem('OptHideConfirm')!== null){
+		//borrar del tiron
+		elemt.remove();
+		saveBoards();
+		countTask();
+		document.querySelector('.deleteWarnig').classList.remove('showWng');
+	} else {
+		//preguntar antes
+		elem('confirmTitle').innerHTML = 'THE TASK';
+		elem('confirmDelete').style.display = 'block';
+		elem('confirmBox').style.display = 'block';
+		//confirm delete
+		var delConfirm = elem("confirmBtn");
+		delConfirm.addEventListener('click', function() {
+			elemt.remove();
+			saveBoards();
+			countTask();
+			elem('confirmDelete').style.display = 'none';
+			elem('confirmBox').style.display = 'none';
+		});
+		//cancel delete
+		var canConfirm = elem("confirmCls");
+		canConfirm.addEventListener('click', function() {
+			elem('confirmDelete').style.display = 'none';
+			elem('confirmBox').style.display = 'none';
+		});
+	}
+}
+
+
+
+
+//CHANGE LIST HEIGHT
+function changeListHeight(id){
+	elem(id).classList.toggle('active');
+	var boards = document.querySelectorAll('#myLists > div');
+	for(var i=0; i<boards.length; i++){
+		boards[i].classList.toggle('full');
+	}
+	elem('myLists').classList.toggle('full');
+	var isActive = elem(id).getAttribute('class');
+	if(isActive!=''){
+		localStorage.setItem('OptFullBoard',isActive);
+		elem('textHeight').innerHTML = 'ADJUST';
+	} else {
+		localStorage.removeItem('OptFullBoard'); 
+		elem('textHeight').innerHTML = 'FULL';
+	} 
+}
+
+
+
+//COUNT TASK
+function countTask(){
+	var cypher = document.querySelectorAll('.section');
+	var totalNum = 0;
+	for(var i=0; i<cypher.length; i++){
+		var num = cypher[i].childElementCount;
+		//console.log(num);
+		var parent = cypher[i].parentNode;
+		var childrn = parent.children[0];
+		var nal = childrn.children[0];
+		nal.innerHTML = num;
+		totalNum += num;
+	}
+	elem('totalTask').innerHTML = totalNum;
+}
+
+
+
+
+//check if confirm
+function checkIfCnfr(){
+	if(localStorage.getItem('OptHideConfirm') !== null){
+		localStorage.removeItem('OptHideConfirm');
+		document.querySelector('.deleteWarnig').classList.add('showWng');
+		elem('textWarning').innerHTML = 'HIDE';
+	} else {
+		localStorage.setItem('OptHideConfirm', 'true');
+		document.querySelector('.deleteWarnig').classList.remove('showWng');
+		elem('textWarning').innerHTML = 'SHOW';
+	}
+}
+
+
+
+//delete options
+function delOptions(){
+	localStorage.removeItem('OptShowOptions');
+localStorage.removeItem('OptBackgroundImage');
+	localStorage.removeItem('OptFullBoard');
+	localStorage.removeItem('OptOpacityLevel');
+	localStorage.removeItem('OptHideConfirm');
+localStorage.removeItem('OptHideConfirmUrgent');
+	localStorage.removeItem('OptBackgroundImageUrl');
+	location.href = location.href;
+//location.reload();		
+}
+
+
+
+
+//toggle options
+function openCloseOptions(){
+	document.querySelector('.options').classList.toggle('opened');
+	if(localStorage.getItem('OptShowOptions') !== null){
+		localStorage.removeItem('OptShowOptions');
+		elem('openOptions').innerText = 'OPEN';
+	} else {
+		localStorage.setItem('OptShowOptions','true');
+		elem('openOptions').innerText = 'CLOSE';
+	}
+}
+
+
+
+
+//url img by
+function getUrl(){
+	var imageUrl = elem('urlImage').value;
+	localStorage.setItem('OptBackgroundImageUrl',imageUrl);
+	var bg = document.getElementsByClassName('overlay-bg');
+	var bgClass = bg[0];
+	bgClass.setAttribute('style','background-image:url('+imageUrl+')');
+	elem('byUrl').removeAttribute('style');
+}
+
+
+
+//export
+function exportBoard(){
+	if(localStorage.length == 0){
+		alert('Nothing to export...');
+	} else {
+		var fileJKB = "";
+		for (x=0; x<=localStorage.length-1; x++)  {  
+		  fileJKB += localStorage.key(x) +' : '+ localStorage.getItem(localStorage.key(x)) + '\n' ;
+		}
+		var blob = new Blob([fileJKB],{type: "text/plain"}); 
+		download(blob,"jkb-saved.txt"); 
+		function download(blob,name) { 
+			var url = URL.createObjectURL(blob);
+			elem('expHidden').href = url; 
+			elem('expHidden').download = name;
+			
+			var ev = new MouseEvent("click",{}); 
+			elem('expHidden').dispatchEvent(ev); 
+			
+		}
+	}
+}
+
+//import 
+function importBoard(){
+	elem('impFile').click();
+}
+
+
+//help
+function showHelp(){
+	elem('helpContent').classList.toggle('active');
+	elem('help').classList.toggle('showing');
+}
+
+</script><link rel="stylesheet" href="./anwarstyle.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="overlay-bg" id="bg-image"></div>
+<header>
+	
+	<h1>
+		<a target="_top" href="../index.html"><span style="font-size:25px;">I SUDIRNO I  &nbsp</span></a>
+		<a target="_top" href="../titik/index.html"><span style="font-size:25px;">I TITIK I  &nbsp</span></a>
+		<a target="_top" href="../ahlan/index.html"><span style="font-size:25px;">I AHLAN I  &nbsp</span></a>
+			
+	</h1>
+	
+
+	</h1>
+	
+	<div id="totalTask"></div>
+
+	<div id="btns">
+		<div class="btnAdd">
+			<button id="addToDo">&#10010;</button>
+		</div>
+		<div class="btnUrg">
+			<button id="addUrgent">&nbsp;</button>
+		</div>
+		<div id="deleteItem">
+			<ul id="delete-list" ondrop="drop(event, this);delTaskDrop()" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)">
+			</ul>
+		</div>
+	</div>
+
+	<div class="options">
+		<div id="toggleOptions">
+			<button id="btnOptions" onClick="openCloseOptions()"></button>
+			<div class="optionsToggle">
+				<span><span id="openOptions">OPEN</span> OPTIONS</span>
+			</div>
+		</div>
+		<div class="imageBg">
+			<button id="boardBg"></button>
+			<div class="bgs" id="bgOptions">
+				<div>BG IMAGE</div><span>MOUNTAIN</span><span>CLIMBING</span><span>COAST</span><span>SPACE</span><span>CODE</span><span>URL</span><span>NONE</span>
+				<div id="byUrl"><input type="text" placeholder="url" id="urlImage"><button id="submitUrl" onClick="getUrl()">OK</button></div>
+			</div>
+		</div>
+		<div class="boardHeight">
+			<button id="boardFull" onClick="changeListHeight(this.id)"></button>
+			<div class="heightToggle">
+				<span><span id="textHeight">FULL</span> HEIGHT</span>
+			</div>
+		</div>
+		<div class="boardOpacity">
+			<div class="selector">
+				<span>OPACITY</span>
+				<input id="boardOpac" type="range" min="0" max="10" value="5" step="1" oninput="showOpac(this.value)" onChange="showOpac(this.value)">
+			</div>
+		</div>
+		<div class="deleteWarnig showWng">
+			<button id="optionCfrm" onClick="checkIfCnfr()"></button>
+			<div class="warningToggle">
+				<span id="textWarning">HIDE</span> WARNING
+			</div>
+		</div>
+		<div class="deleteOptions">
+			<button id="optionOptns" onClick="delOptions()"></button>
+			<div class="deleteToggle"><span>DELETE</span> OPTIONS</div>
+		</div>
+	</div>
+</header>
+
+<div id="myLists">
+	<div id="to-do">
+		<h3>TO-DO LIST<span></span></h3>
+		<ul id="ul-todo" class="section" ondrop="drop(event, this)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)">
+			<li id="li-0003" draggable="true" ondragstart="drag(event)" ontouchstart="drag(event)" class="sample"><span class="txt">Add "touch events" for tablet and mobile devices.</span><span class="idTask">0003</span><a class="up" href="#"></a><a class="down" href="#"></a><a class="delete" onClick="delTask(event, this.parentNode)" href="#"></a></li>
+			<li id="li-0006" draggable="true" ondragstart="drag(event)" ontouchstart="drag(event)" class="sample"><span class="txt">Add new options:<br>· background blur<br>· background darken </span><span class="idTask">0006</span><a class="up" href="#"></a><a class="down" href="#"></a><a class="delete" onClick="delTask(event, this.parentNode)" href="#"></a></li>
+		</ul>
+	</div>
+	<div id="work-in">
+		<h3> ON PROGRESS <span></span></h3>
+		<ul id="ul-working" class="section" ondrop="drop(event, this)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)">
+			<li id="li-0004" draggable="true" ondragstart="drag(event)" ontouchstart="drag(event)" class="sample"><span class="txt">Add capability to reorder the tasks inside a list (only with arrows right now).</span><span class="idTask">0004</span><a class="up" href="#"></a><a class="down" href="#"></a><a class="delete" onClick="delTask(event, this.parentNode)" href="#"></a></li>
+		</ul>
+	</div>
+	<div id="do-ne">
+		<h3>DONE<span></span></h3>
+		<ul id="ul-done" class="section" ondrop="drop(event, this)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)">
+			<li id="li-0001" draggable="true" ondragstart="drag(event)" ontouchstart="drag(event)" class="sample"><span class="txt">Publish "Josetxu Kanban Board" on Codepen.</span><span class="idTask">0001</span><a class="up" href="#"></a><a class="down" href="#"></a><a class="delete" onClick="delTask(event, this.parentNode)" href="#"></a></li>
+			<li id="li-0005" draggable="true" ondragstart="drag(event)" ontouchstart="drag(event)" class="sample"><span class="txt">Improving background image functionality for the board.</span><span class="idTask">0005</span><a class="up" href="#"></a><a class="down" href="#"></a><a class="delete" onClick="delTask(event, this.parentNode)" href="#"></a></li>
+			<li id="li-0002" draggable="true" ondragstart="drag(event)" ontouchstart="drag(event)" class="sample"><span class="txt">Add a pencil icon to "Describe the Task..." text.</span><span class="idTask">0002</span><a class="up" href="#"></a><a class="down" href="#"></a><a class="delete" onClick="delTask(event, this.parentNode)" href="#"></a></li>
+		</ul>
+	</div>
+</div>
+
+<!-- MODAL -->
+<div id="modalOverlay"></div>
+<div id="modalBox">
+	<p id="modalDesc">Describe the Task...</p>
+	<textarea id="taskText"></textarea>
+	<button id="taskButton">Ok</button>
+	<span id="modalClose">Cancel</span>
+</div>
+
+<!-- CONFIRM -->
+<div id="confirmDelete"></div>
+<div id="confirmBox">
+	<p><span id="confirmTitle">THE TASK</span> WILL BE DELETED...</p>
+	<div><input id="dontShowAgain" type="checkbox" /><label for="dontShowAgain">DON'T SHOW THIS MESSAGE AGAIN</label></div>
+	<button id="confirmBtn">DELETE</button>
+	<button id="confirmCls">CANCEL</button>
+</div>
+<div id="confirmUrgent">
+	<p><span id="numTaskUrg"></span> TASK<span id="pluralTsk">S</span> WITHIN THE URGENT LIST WILL BE DELETED TOO...</p>
+	<div><input id="dontShowAgainUrgent" type="checkbox" /><label for="dontShowAgainUrgent">DON'T SHOW THIS MESSAGE AGAIN</label></div>
+	<button id="confirmUrgentBtn">REMOVE ANYWAY</button>
+	<button id="confirmUrgentCls">CANCEL</button>
+</div>
+
+<footer>
+	<div class="l-footer">
+		<span>
+			<button id="josetxuBtn" onClick="window.open('../index.html');"></button>
+		</span>
+		<span>
+			<button id="help" onClick="showHelp()"></button>
+		</span>
+	</div>
+	<div class="r-footer">
+		<span>
+			<button id="impBrd" onClick="importBoard()"><span>IMPORT BOARD</span></button>
+			<span id="getFile" style="display:none;"><input type="file" id="impFile"></span>
+		</span>
+		<span>
+			<button id="expBrd" onClick="exportBoard()" href="#"><span>EXPORT BOARD</span></button><a id="expHidden" href="#">&nbsp;</a>
+		</span>
+	</div>
+</footer>
+
+<div id="helpContent">
+
+	<div class="helpTitle">Help Guide <span id="helpClose"></span></div>
+
+	<div class="infoMenu">
+		<div>Menu</div>
+		<div class="infoLine totalTasksInfo">Show total number of tasks in whole board. </div>
+		<div class="infoLine newTaskInfo">Add New task inside "To Do" list. </div>
+		<div class="infoLine urgentListInfo">Create or remove "Urgent" list. </div>
+		<div class="infoLine deleteTaskInfo">Drop one task here to remove it or click to remove all tasks. </div>
+		<div class="infoLine optionsMenuInfo">Open or close the options menu. </div>
+	</div>
+	<div class="infoOptions">
+		<div>Options</div>
+		<div class="infoLine bgImgInfo">Select background image or link yours by url.</div>
+		<div class="infoLine adjustHeightInfo">Adjust the height of the list or set full height (only desktop view). </div>
+		<div class="infoLine opacityInfo">Select opacity level for the list background. </div>
+		<div class="infoLine warningInfo">Show or hide warning when remove tasks (showed by default). </div>
+		<div class="infoLine deleteOptionsInfo">Clear all saved options (tasks not included). </div>
+	</div>
+	<div class="infoFooter">
+		<div>Footer</div>
+		<div class="infoLine helpInfo">Show or hide the help guide (that what are you reading right now). </div>
+		<div class="infoLine exportInfo">Export whole board with all tasks and options in a text file. </div>
+		<div class="infoLine importInfo">Import whole board with all tasks and options from a text file. </div>
+	</div>
+	<div class="infoSave">
+		<div>Save</div>
+		<div class="infoLine saveInfo">JKB uses localStorage object to save the tasks and the selected options. </div>
+		<div class="infoLine savedInfo">When an option changes, or create, relocate or remove a task, all auto saved. </div>
+		<div class="infoLine storageInfo">Local storage allows to save the data in browser, not beyond. </div>
+		<div class="infoLine byFileInfo">If you want to move your board data you can exporting and importing by file. </div>
+	</div>
+</div>
+<!-- partial -->
+
+<script type="text/javascript">
+/*** FUNCTIONS LOCATED IN <HEAD> TAG ON SETTINGS MENU ***/
+
+/*** READY ***/
+
+(function() {
+
+
+	//CALCULATE ORDER
+	function calcUpDown(){
+		var ulPanels = document.querySelectorAll(".section");
+		for (var x=0; x<ulPanels.length; x++){
+			var upLink = ulPanels[x].querySelectorAll(".up");
+			for (var i = 0; i < upLink.length; i++) {
+				upLink[i].removeEventListener('click',upListener);
+				upLink[i].addEventListener('click', upListener); 
+			}
+			var downLink = ulPanels[x].querySelectorAll(".down");
+			for (var i = 0; i < downLink.length; i++) {
+				downLink[i].removeEventListener('click',downListener);
+				downLink[i].addEventListener('click', downListener); 
+			}
+		}		
+	}
+
+
+	//TO DO button
+	var toDoButton = elem('addToDo');
+	var toDoList =  elem('ul-todo');
+	toDoButton.addEventListener('click',function(){
+		
+		var newList = document.createElement("li");
+		newList.innerHTML = '<span class="txt">New Task</span><span class="idTask"></span><a class="up" href="#"></a><a class="down" href="#"></a><a class="delete" onclick="delTask(event, this.parentNode)" href="#"></a>';
+		
+		var lis = document.getElementsByTagName('li');
+		var finalID;
+		if(lis.length == 0){
+			finalID = '0001';
+		} else {
+			var ids = [];
+			for (var i =0; i<lis.length; i++){
+				console.log(lis[i].getAttribute('id').slice(3));
+				ids.push(lis[i].getAttribute('id').slice(3));
+			}	
+			finalID = parseInt(ids.sort().pop());
+			finalID++;
+			while (finalID.toString().length < 4) {
+				finalID = '0'+finalID;
+			}
+		}
+		
+		newList.setAttribute('id','li-'+finalID);
+		newList.setAttribute('draggable','true');
+		newList.setAttribute('ondragstart','drag(event)');
+		newList.setAttribute('ontouchstart','drag(event)'); /*touch event*/
+		
+		newList.childNodes[1].innerText = finalID;
+		
+		toDoList.prepend(newList);	
+		changeTask();
+		calcUpDown();
+		
+		var aux = elem("ul-todo").firstChild;
+		var foo = aux.children[0];
+		foo.click();
+		
+		countTask();
+		
+		saveBoards();
+		
+	});
+	
+	//OK BUTTON
+	var okButton = elem('taskButton');
+	okButton.addEventListener('click',function(){
+		var newText =  elem('taskText');
+		var theTask = elem(globalID).getElementsByTagName('span')[0];
+		result = newText.value;
+		if(result==''){
+			newText.setAttribute('placeholder','write something...')
+		} else {
+			theTask.innerText = result;
+			closeModal();
+			saveBoards();
+		}
+		
+		
+	});
+	
+	//CLOSE MODAL
+	var closeBox = elem('modalClose');
+	closeBox.onclick=closeModal;
+	var closeOverlay = elem('modalOverlay');
+	closeOverlay.onclick=closeModal;
+	
+	//DELETE BUTTON
+	var deleteButton = elem('deleteItem');
+	deleteButton.addEventListener('click',function(){
+	
+		if(elem('totalTask').innerHTML == '0') return;
+	
+		if(localStorage.getItem('OptHideConfirm')!== null){
+			//borrar del tiron
+			localStorage.removeItem('listToDo');
+			localStorage.removeItem('listWorking');
+			localStorage.removeItem('listUrgent');
+			localStorage.removeItem('listDone');
+			localStorage.setItem('listToDo','');
+			location.href = location.href;
+			//location.reload();
+		} else {
+			//alert('¿DELETE ALL?');
+			//preguntar antes
+			elem('confirmTitle').innerHTML = 'ALL TASKS';
+			elem('confirmDelete').style.display = 'block';
+			elem('confirmBox').style.display = 'block';
+			//confirm delete
+			var delConfirm = elem("confirmBtn");
+			delConfirm.addEventListener('click', function() {
+				localStorage.removeItem('listToDo');
+				localStorage.removeItem('listWorking');
+				localStorage.removeItem('listUrgent');
+				localStorage.removeItem('listDone');
+				localStorage.setItem('listToDo','');
+				location.href = location.href;
+				//location.reload();
+				//elem('confirmDelete').style.display = 'none';
+				//elem('confirmBox').style.display = 'none';
+			});
+			//cancel delete
+			var canConfirm = elem("confirmCls");
+			canConfirm.addEventListener('click', function() {
+				elem('confirmDelete').style.display = 'none';
+				elem('confirmBox').style.display = 'none';
+			});
+			
+			
+			
+		}
+	
+	});
+	
+	
+	//ADD URGENT LIST
+	var urgentBoard = elem('addUrgent');
+	urgentBoard.addEventListener('click',function(){
+		if(elem('ur-gent')){ //remove
+			
+			var urgTskNum = elem('ur-gent').childNodes[1].childNodes.length;
+			if(urgTskNum == 0){
+				//alert('sin tareas');
+				this.parentNode.classList.remove("active");
+				//alert('hay urgent');
+				elem('myLists').classList.remove('fourCol');
+				elem('ur-gent').remove();
+				saveBoards();
+			} else {
+				//alert('con tareas');
+				if(localStorage.getItem('OptHideConfirmUrgent') == null){
+					elem('confirmDelete').style.display='block';
+					elem('confirmUrgent').style.display='block';
+					elem('numTaskUrg').innerHTML = urgTskNum;
+					if(urgTskNum==1) elem('pluralTsk').style.display='none'; else elem('pluralTsk').removeAttribute('style');
+					
+					//confirm remove
+					var delConfirmUrgent = elem("confirmUrgentBtn");
+					delConfirmUrgent.addEventListener('click', function() {
+						elem('addUrgent').parentNode.classList.remove("active");
+						elem('myLists').classList.remove('fourCol');
+						if(elem('ur-gent')) elem('ur-gent').remove();
+						saveBoards();
+						elem('confirmDelete').style.display='none';
+						elem('confirmUrgent').style.display='none';
+					});
+					//cancel remove
+					var canConfirmUrgent = elem("confirmUrgentCls");
+					canConfirmUrgent.addEventListener('click', function() {
+						elem('confirmDelete').style.display = 'none';
+						elem('confirmUrgent').style.display = 'none';
+					});
+				} else {
+					//alert('sin tareas');
+					this.parentNode.classList.remove("active");
+					//alert('hay urgent');
+					elem('ur-gent').remove();
+					saveBoards();
+				}
+				
+				
+			}
+			
+			
+		} else { //add
+			this.parentNode.classList.add("active");
+			elem('myLists').classList.add('fourCol');
+			var newBoard = document.createElement("div");
+			newBoard.innerHTML = '<h3>URGENT<span>0</span></h3><ul id="ul-urgent" class="section" ondrop="drop(event, this)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)"></ul>';
+			newBoard.setAttribute('id','ur-gent');
+			elem('myLists').insertBefore(newBoard, elem('do-ne'));
+			if(elem('do-ne').className=='full') elem('ur-gent').className='full';
+			if(elem('do-ne').getAttribute('style')!=null) elem('ur-gent').setAttribute('style', elem('do-ne').getAttribute('style'));
+			saveBoards();
+		}
+	});
+	
+	
+	
+
+	//DONT SHOW MESSAGE AGAIN
+	var checkConfirm = elem("dontShowAgain");
+	checkConfirm.addEventListener('change', function() {
+		if (this.checked) {
+			localStorage.setItem('OptHideConfirm','true');
+			document.querySelector('.deleteWarnig').classList.remove('showWng');
+			elem('textWarning').innerHTML = 'SHOW';
+		} else {
+			localStorage.removeItem('OptHideConfirm');
+			document.querySelector('.deleteWarnig').classList.add('showWng');
+			elem('textWarning').innerHTML = 'HIDE';
+		}
+	});
+	
+	//DONT SHOW MESSAGE URGENT AGAIN
+	var checkConfirmUrgent = elem("dontShowAgainUrgent");
+	checkConfirmUrgent.addEventListener('change', function() {
+		if (this.checked) {
+			localStorage.setItem('OptHideConfirmUrgent','true');
+		} else {
+			localStorage.removeItem('OptHideConfirmUrgent');
+		}
+	});
+	
+	
+	
+	
+	
+	//CHANGE BACKGROUND IMAGE
+	var bg = document.getElementsByClassName('overlay-bg');
+	var bgClass = bg[0];
+	
+	var changeBgImg = document.querySelectorAll('#bgOptions > span'); 
+	for(var i=0; i<changeBgImg.length; i++){
+		
+		changeBgImg[i].addEventListener('click',function(){
+			
+			var allOpt = this.parentNode.children;
+			for(var x=0; x<allOpt.length; x++){
+				
+				if (window.CP.shouldStopExecution(1)) {
+      	  break;
+    		}
+				
+				allOpt[x].removeAttribute('class');
+			}
+			
+			window.CP.exitedLoop(1);
+			
+			this.classList.add('selected');
+			//aqui
+			if(this.innerText.toLowerCase() =='none') bgClass.className = 'overlay-bg';
+			
+			if(this.innerText.toLowerCase() =='url'){ 
+			
+				bgClass.className = 'overlay-bg';
+			
+				elem('byUrl').style.display = 'block';
+				
+				if(localStorage.getItem('OptBackgroundImageUrl') !== null){
+					bgClass.setAttribute('style','background-image:url('+localStorage.getItem('OptBackgroundImageUrl')+') #fff0;');
+				}
+			} else { 
+				bgClass.removeAttribute('style'); 
+				elem('byUrl').removeAttribute('style');
+				
+				bgClass.className = 'overlay-bg ' + this.innerText.toLowerCase();
+				
+			}
+			
+			localStorage.setItem('OptBackgroundImage', this.innerText);
+			
+		});
+		
+		
+	}
+	
+	
+	
+	//IMPORT
+	var inputImport = elem('impFile');   
+	inputImport.addEventListener('change', () => { 
+		var files = inputImport.files; 
+		if (files.length == 0) return; 
+		const file = files[0];
+		var reader = new FileReader(); 
+		reader.onload = (e) => { 
+			const file = e.target.result; 
+			const lines = file.split(/\r\n|\n/); 
+			//textarea.value = lines.join('\n'); 
+			var toImport = lines.join('\n');
+			var byLine = toImport.split("\n");
+			for(var i = 0; i<byLine.length-1; i++){
+				var toStore = byLine[i].split(' : ');
+				localStorage.setItem(toStore[0],toStore[1]);
+			}
+			//location.reload();
+		}; 
+		reader.onerror = (e) => alert(e.target.error.name); 
+		reader.readAsText(file); 
+		
+		location.href = location.href;
+		
+	}); 
+	
+	
+	
+	
+	//HELP
+	var closeHelp = elem('helpClose');   
+	closeHelp.addEventListener('click', () => { 
+		elem('help').click();
+	}); 
+	
+	
+	
+	//IF SAVED
+	if(localStorage.getItem('listToDo') != null){
+		elem('ul-todo').innerHTML = localStorage.getItem('listToDo');
+		elem('ul-working').innerHTML = localStorage.getItem('listWorking');
+		elem('ul-done').innerHTML = localStorage.getItem('listDone');
+		
+		if(localStorage.getItem('listUrgent') !== null){
+			//alert('no es null');
+			elem('myLists').classList.add('fourCol');
+			var newBoard = document.createElement("div");
+			newBoard.innerHTML = '<h3>TITIK <span></span></h3><ul id="ul-urgent" class="section" ondrop="drop(event, this)" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)"></ul>';
+			newBoard.setAttribute('id','ur-gent');				
+			elem('myLists').insertBefore(newBoard, elem('do-ne'));
+				
+			elem('addUrgent').parentNode.classList.add("active");
+			
+			if(localStorage.getItem('listUrgent') == ''){	
+				//saveBoards();
+				//elem('ul-urgent').innerHTML = localStorage.getItem('listUrgent');
+				//var urgentContent = elem('ul-urgent').innerHTML;
+			} else {
+				//alert('no esta vacio');
+				elem('ul-urgent').innerHTML = localStorage.getItem('listUrgent');
+			}
+			
+		} else {
+			//alert('si es null');
+		}
+		
+		
+		
+		
+	}
+	
+	//OPTIONS
+	if(localStorage.getItem('OptShowOptions') !== null){
+		document.querySelector('.options').classList.toggle('opened');
+		elem('openOptions').innerText = 'CLOSE';
+	}
+	//IMAGE
+	if(localStorage.getItem('OptBackgroundImage') !== null){
+		var x = document.querySelectorAll('#bgOptions > span');
+		for(var i=0; i<x.length; i++){
+			if(x[i].innerText == localStorage.getItem('OptBackgroundImage')){
+				if(localStorage.getItem('OptBackgroundImage')!= 'URL'){
+					x[i].click();
+				} else {
+					x[i].classList.add('selected');
+					elem('bg-image').setAttribute('style','background-image:url('+ localStorage.getItem('OptBackgroundImageUrl') +')');
+				}
+			}
+		}
+	}
+	//HEIGHT
+	if(localStorage.getItem('OptFullBoard') !== null){
+		elem('boardFull').click();
+	}
+	//OPACITY
+	if(localStorage.getItem('OptOpacityLevel') !== null){
+		elem('boardOpac').value = localStorage.getItem('OptOpacityLevel');
+		showOpac(localStorage.getItem('OptOpacityLevel'));
+	}
+	//CONFIRM
+	if(localStorage.getItem('OptHideConfirm') !== null){
+		document.querySelector('.deleteWarnig').classList.remove('showWng');
+		elem('textWarning').innerHTML = 'SHOW';
+	} else {
+		document.querySelector('.deleteWarnig').classList.add('showWng');
+		elem('textWarning').innerHTML = 'HIDE';
+	}
+	
+	
+	changeTask();
+	
+	calcUpDown();
+	
+	countTask();
+	
+	
+})();
+
+</script>
+</body>
+</html>

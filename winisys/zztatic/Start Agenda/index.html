@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Waiting Agenda</title>
+
+    <link href="./img/bootstrap.min.css" rel="stylesheet" />
+    <!-- <link href="./img/css2.css" rel="stylesheet" /> -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <section id="hero" class="hero text-center text-white d-flex justify-content-center align-items-center">
+      <main>
+        <div id="timeModal" class="modal">
+          <div class="modal-content">
+            <span class="close" onclick="hideModal()">&times;</span>
+            <input type="time" id="campaignStartTime" />
+            <button class="x" onclick="setTime()">Set Time</button>
+          </div>
+        </div>
+
+        <h4><i>Safety First !!! Ladies and Gentlement</i></h4>
+        <div class="marquee-content">
+          <div>Welcome to Sumitomo Electric Wintec Indonesia</div>
+        </div>
+        <p>The Audit/Meeting Will be start in:</p>
+
+        <!-- Countdown Timer -->
+        <div id="countdown" class="countdown">
+          <div class="time">
+            <h2 id="days">00</h2>
+            <small>Days</small>
+          </div>
+          <div class="time">
+            <h2 id="hours">00</h2>
+            <small>Hours</small>
+          </div>
+          <div class="time">
+            <h2 id="minutes">00</h2>
+            <small>Minutes</small>
+          </div>
+          <div class="time">
+            <h2 id="seconds">00</h2>
+            <small>Seconds</small>
+          </div>
+        </div>
+
+        <a href="#invitation" class="btn btn-lg mt-4" onclick="showModal()">Set Time Agenda</a>
+      </main>
+    </section>
+    <!-- 
+    <script src="./img/bootstrap.bundle.min.js"></script> -->
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

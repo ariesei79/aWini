@@ -1,0 +1,44 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.kanban-board {
+  display: flex;
+  justify-content: space-between;
+}
+
+.column {
+  width: 30%;
+  border: 1px solid #300fec;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.task {
+  border: 1px solid #ccc;
+  margin: 5px;
+  padding: 5px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.edit-task, .delete-task {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.delete-task {
+  background-color: red;
+}
+
+button:hover {
+  opacity: 0.7;
+}

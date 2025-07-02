@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Direktori Web</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        header { background-color: #333; color: white; padding: 20px; text-align: center; }
+        main { padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .folder-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .folder-item { background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); text-align: center; }
+        .folder-item:hover { background-color: #e2e2e2; cursor: pointer; }
+        .folder-item a { text-decoration: none; color: #333; font-size: 18px; }
+        footer { text-align: center; padding: 10px; background-color: #333; color: white; position: fixed; width: 100%; bottom: 0; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Antarmuka Direktori Web</h1>
+</header>
+
+<main>
+    <div class="container">
+        <div class="folder-list" id="folder-list">
+            <!-- Folder links akan di-load di sini -->
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2024 Web Interface | IIS Server</p>
+</footer>
+
+<script>
+// Mengambil data folder secara dinamis dari server (misalnya lewat API atau PHP)
+window.onload = function() {
+    fetch('/getfolders.php')  // URL endpoint untuk mengambil daftar folder (disesuaikan dengan server Anda)
+        .then(response => response.json())
+        .then(data => {
+            const folderList = document.getElementById('folder-list');
+            data.forEach(folder => {
+                const folderItem = document.createElement('div');
+                folderItem.className = 'folder-item';
+                folderItem.innerHTML = '<a href="/${folder}">${folder}</a>';
+                folderList.appendChild(folderItem);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching folder data:', error);
+        });
+};
+</script>
+
+</body>
+</html>

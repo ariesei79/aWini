@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <title>Pencarian Data Excel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"],
+        input[type="text"] {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 250px;
+            transition: border-color 0.25s ease;
+        }
+
+        input[type="file"]:hover,
+        input[type="text"]:hover {
+            border-color: #007bff;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #status {
+            text-align: center;
+            font-weight: 500;
+            margin: 10px 0;
+        }
+
+        .loading-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 4px solid #ccc;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        #loadingGif {
+            display: none;
+            width: 30px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f1f1;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Cari Data dari Excel</h1>
+
+    <div class="form-container">
+        <input type="file" id="upload" accept=".xlsx, .xls" />
+        <input type="text" id="search" placeholder="Masukkan teks pencarian" />
+        <button id="searchButton">Cari</button>
+    </div>
+
+    <div class="loading-area">
+        <div class="spinner" id="spinner"></div>
+        <img id="loadingGif" src="icon/cari.gif" alt="Loading..." />
+    </div>
+
+    <div id="status"></div>
+    <div id="result"></div>
+
+    <script>
+        let globalData = [];
+        let headers = [];
+
+        document.getElementById('upload').addEventListener('change', handleFile, false);
+        document.getElementById('searchButton').addEventListener('click', search);
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                globalData = [];
+                headers = [];
+
+                workbook.SheetNames.forEach((sheetName, index) => {
+                    const sheet = workbook.Sheets[sheetName];
+                    const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+                    if (sheetData.length > 0) {
+                        if (index === 0) {
+                            headers = sheetData[0];
+                        }
+                        globalData = globalData.concat(sheetData.slice(1));
+                    }
+                });
+
+                document.getElementById('status').innerText = "File berhasil diunggah. Anda dapat melakukan pencarian.";
+                document.getElementById('result').innerHTML = "";
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function search() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const resultDiv = document.getElementById('result');
+            const statusDiv = document.getElementById('status');
+            const loadingGif = document.getElementById('loadingGif');
+            const spinner = document.getElementById('spinner');
+
+            resultDiv.innerHTML = "";
+            statusDiv.innerText = "Mencari...";
+            loadingGif.style.display = "inline";
+            spinner.style.display = "inline";
+
+            if (globalData.length === 0) {
+                resultDiv.innerHTML = "Silakan unggah file Excel terlebih dahulu.";
+                statusDiv.innerText = "";
+                loadingGif.style.display = "none";
+                spinner.style.display = "none";
+                return;
+            }
+
+            setTimeout(() => {
+                const foundRows = globalData.filter(row =>
+                    row.some(cell => cell?.toString().toLowerCase().includes(searchTerm))
+                );
+
+                if (foundRows.length > 0) {
+                    let table = "<table><tr>";
+                    headers.forEach(header => {
+                        table += `<th>${header}</th>`;
+                    });
+                    table += "</tr>";
+
+                    foundRows.forEach(row => {
+                        table += "<tr>";
+                        headers.forEach((_, i) => {
+                            table += `<td>${row[i] !== undefined ? row[i] : ""}</td>`;
+                        });
+                        table += "</tr>";
+                    });
+
+                    table += "</table>";
+                    resultDiv.innerHTML = table;
+                    statusDiv.innerText = `Ditemukan ${foundRows.length} hasil dari pencarian.`;
+                } else {
+                    resultDiv.innerHTML = "Tidak ada hasil yang ditemukan.";
+                    statusDiv.innerText = "Silakan coba dengan kata kunci lain.";
+                }
+
+                document.getElementById('search').value = "";
+                loadingGif.style.display = "none";
+                spinner.style.display = "none";
+            }, 600);
+        }
+    </script>
+</body>
+
+</html>

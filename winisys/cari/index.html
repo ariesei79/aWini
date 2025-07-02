@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sumitomo Electric Wintec Indonesia Quality Database System</title>
+    <link rel="icon" type="image/png" href="icon/sumitomo.png" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tiff.js/1.0.0/tiff.min.js"></script> 
+    <style>
+        body {
+            background: url('icon/bg.png') no-repeat center center fixed;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 40px;
+            padding-bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header-container {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            padding: 10px 0;
+            background: linear-gradient(to right, #ff0000, #ffffff);
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+        .header-logo {
+            width: 90px;
+            margin-right: 10px;
+        }
+        .header-text {
+            color: black;
+        }
+        .header-top {
+            font-size: 30px;
+            font-weight: bold;
+        }
+        .header-bottom {
+            font-size: 25px;
+            font-weight: bold;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+            margin-top: 100px;
+        }
+        #searchContainer {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        #searchInput {
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+            width: 600px;
+            border: 4px solid blue;
+            border-radius: 25px 0 0 25px;
+            outline: none;
+            transition: border 0.3s;
+        }
+        #searchInput:focus {
+            border-color: #45a049;
+        }
+        #searchBtn {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: solid blue;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 0 25px 25px 0;
+            margin-left: -5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        #searchBtn:hover {
+            background-color: #45a049;
+            transform: translateY(-1px);
+        }
+        #results {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .result-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid blue;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .result-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .result-item a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-size: large;
+            font-weight: bold;
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+        .result-item a:hover {
+            color: #45a049;
+        }
+        .result-image {
+            max-width: 50px;
+            height: auto;
+            border: 2px solid blue;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: rgba(76, 175, 80, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #333;
+            color: white;
+            font-size: 18px;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+        }
+        #clock {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #4CAF50;
+        }
+        .folder-name {
+            font-weight: bold;
+            font-size: large;
+            color: blue;
+            margin-right: 5px;
+        }
+        .folder-label {
+            font-weight: bold;
+            font-size: large;
+            color: blue;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="header-content">
+            <img src="icon/sumitomo.png" alt="Sumitomo Logo" class="header-logo" />
+            <div class="header-text">
+                <div class="header-top">PT.Sumitomo Electric Wintec Indonesia</div>
+                <div class="header-bottom">Quality Database System</div>
+            </div>
+        </div>
+    </div>
+    <h1></h1>
+    <div id="clock"></div> 
+    <div id="searchContainer">
+        <input type="text" id="searchInput" placeholder="Enter file name...">
+        <button id="searchBtn">Search</button>
+    </div>
+    <div id="results"></div>
+    <footer>
+        Copyright 2025 Barakids Admin Dashboard. Process Engineering Dept.
+    </footer>
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayName = days[now.getDay()];
+            const date = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').innerText = `${dayName}, ${date}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function performSearch(query) {
+            fetch(`/search?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsContainer = document.getElementById('results');
+                    resultsContainer.innerHTML = '';
+                    document.getElementById('searchInput').value = '';
+
+                    if (data.length === 0) {
+                        resultsContainer.innerHTML = '<p>No results found</p>';
+                    } else {
+                        data.forEach(item => {
+                            const filePath = item.path;
+                            const labelName = item.label;
+
+                            const resultItem = document.createElement('div');
+                            resultItem.className = 'result-item';
+
+                            const folderLabel = document.createElement('span');
+                            folderLabel.className = 'folder-label';
+                            folderLabel.innerText = `[${labelName}]`;
+                            resultItem.appendChild(folderLabel);
+
+                            const folderNameElement = document.createElement('span');
+                            folderNameElement.className = 'folder-name';
+                            folderNameElement.innerText = '';
+                            resultItem.appendChild(folderNameElement);
+
+                            const anchor = document.createElement('a');
+                            anchor.href = filePath;
+                            anchor.target = '_blank';
+                            anchor.innerText = filePath.split('/').pop();
+                            resultItem.appendChild(anchor);
+
+                            let imgSrc = '';
+                            if (filePath.endsWith('.tif') || filePath.endsWith('.tiff')) {
+                                imgSrc = 'icon/tiff-icon.png';
+                            } else if (filePath.endsWith('.pdf')) {
+                                imgSrc = 'icon/pdf-icon.png';
+                            } else if (filePath.endsWith('.jpg')) {
+                                imgSrc = 'icon/jpg-icon.png';
+                            } else if (filePath.endsWith('.xls')) {
+                                imgSrc = 'icon/xls-icon.png';
+                            } else if (filePath.endsWith('.xlsx')) {
+                                imgSrc = 'icon/xlsx-icon.png';
+                            } else if (filePath.endsWith('.krd')) {
+                                imgSrc = 'icon/krd-icon.png';
+                            }
+
+                            if (imgSrc) {
+                                const img = document.createElement('img');
+                                img.src = imgSrc;
+                                img.alt = 'File Icon';
+                                img.className = 'result-image';
+                                resultItem.prepend(img);
+                            }
+
+                            resultsContainer.appendChild(resultItem);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('results').innerHTML = '<p>Error fetching results</p>';
+                });
+        }
+
+        document.getElementById('searchBtn').onclick = function () {
+            const query = document.getElementById('searchInput').value;
+            performSearch(query);
+        };
+
+        document.getElementById('searchInput').addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                const query = document.getElementById('searchInput').value;
+                performSearch(query);
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

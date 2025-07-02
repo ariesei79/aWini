@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "type": "chrome",
+      "name": "http://172.17.44.106/",
+      "request": "launch",
+      "url": "http://172.17.44.106/PE_Trello/"
+    }
+  ]
+}

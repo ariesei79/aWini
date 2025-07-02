@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Real Time</title>
+    <script src="script.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+			width: 95%;
+            margin: auto;
+        }
+		.judul {
+            width: 100%;
+			float: left;
+		}
+        .left, .right {
+            width: 49%;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			margin-top: 10px;
+        }
+        .left {
+			float: left;
+        }
+        .right {
+			float: right;
+        }
+        .left h2 {
+			margin-left: 3%;
+        }
+        .right h2 {
+			margin-left: 3%;
+        }
+        .chart-container {
+            width: 95%;
+            margin: auto;
+            padding-top: 50px;
+        }
+        canvas {
+            max-width: 100%;
+        }
+		.judulg {
+            width: 100%;
+			float: left;
+			margin-left: 1%;
+		}
+    </style>
+	<script>
+        function tampilkanTanggal() {
+            // Membuat objek tanggal
+            var tanggal = new Date();
+            
+            // Mendapatkan tanggal dalam format yang diinginkan
+            var bulanIndex = tanggal.getMonth(); // Bulan dimulai dari 0
+            var tahun = tanggal.getFullYear();
+			
+			var namaBulan = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+			
+			var bulan = namaBulan[bulanIndex];
+			
+            // Format tanggal
+            var tanggalFormat = bulan + ', ' + tahun;
+
+            // Menampilkan tanggal pada elemen dengan id 'tanggal'
+            document.getElementById('tanggal').textContent = tanggalFormat;
+        }
+		
+		function muatData() {
+            fetch('dataM.json')
+                .then(response => response.json())
+                .then(data => {
+                    // Mengatur konten tabel dengan data yang diterima
+                    document.getElementById('targetM').textContent = data.TargetM.toLocaleString();
+                    document.getElementById('achieveM').textContent = data.AchieveM.toLocaleString();
+                    document.getElementById('targetD').textContent = data.TargetD.toLocaleString();
+                    document.getElementById('achieveD').textContent = data.AchieveD.toLocaleString();
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</head>
+<body>
+	<h1 class="judul">Production Real Time - <span id="tanggal"></span></h1>
+	<div class="left">
+		<h1 class="judulg">Mounthly</h1>
+		<div class="chart-container">
+			<canvas id="myChart"></canvas>
+		</div>
+		<div class="left">
+			<h2>Target : <span id="targetM"></span></h2>
+		</div>
+		<div class="right">
+			<h2>Actual : <span id="achieveM"></span></h2>
+		</div>
+	</div>
+	<div class="right">
+		<h1 class="judulg">Daily</h1>
+		<div class="chart-container">
+			<canvas id="myChartD"></canvas>
+		</div>
+		<div class="left">
+			<h2>Target : <span id="targetD"></span></h2>
+		</div>
+		<div class="right">
+			<h2>Actual : <span id="achieveD"></span></h2>
+		</div>
+	</div>
+
+    <script>
+        // Fungsi untuk memuat data dari file JSON
+        async function loadData() {
+            const response = await fetch('data.json');
+            const data = await response.json();
+
+            const labels = data.map(entry => entry.Date);
+            const plannData = data.map(entry => entry.Plann);
+            const actualData = data.map(entry => entry.Actual !== null ? entry.Actual : null);
+            const plannDataD = data.map(entry => entry.PlannD);
+            const actualDataD = data.map(entry => entry.ActualD !== null ? entry.ActualD : null);
+			//const period = data.map(entry => entry.Pr);
+
+            // Membuat grafik menggunakan Chart.js
+			Chart.defaults.font.size = 18;
+            const ctx = document.getElementById('myChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Plann',
+                            data: plannData,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Actual',
+                            data: actualData,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.dataset.label + ': ' + (tooltipItem.raw !== null ? tooltipItem.raw.toFixed(2) : 'N/A');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Kg'
+                            },
+                            suggestedMin: 0
+                        }
+                    }
+                }
+            });
+			
+            const ctxd = document.getElementById('myChartD').getContext('2d');
+            new Chart(ctxd, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Plann',
+                            data: plannDataD,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Actual',
+                            data: actualDataD,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.dataset.label + ': ' + (tooltipItem.raw !== null ? tooltipItem.raw.toFixed(2) : 'N/A');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Kg'
+                            },
+                            suggestedMin: 0
+                        }
+                    }
+                }
+            });
+        }
+
+        // Panggil fungsi loadData saat halaman dimuat
+		window.onload = function() {
+            tampilkanTanggal();
+            loadData();
+			muatData();
+        };
+    </script>
+</body>
+</html>

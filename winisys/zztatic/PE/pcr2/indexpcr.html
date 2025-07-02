@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>PCR Progress Status</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        body, td, th {
+            font-family: Trebuchet MS, Arial, Helvetica, sans-serif;
+        }
+        body {
+            background-image: url(../img/dash-bg-03.jpg);
+        }
+        .Footer {
+            text-align: center;
+            font-size: 18px;
+            color: #FF0;
+            font-weight: bold;
+        }
+        .draggable {
+            cursor: move;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>PCR Progress Status</h1>
+</header>
+
+<div id="form-container">
+    <form>
+        <input type="text" id="input" maxlength="300" placeholder="Input Judul PCR" autocomplete="off">
+        <button><img src="faplus.png" width="51" height="40"></button>
+    </form>
+</div>
+
+<div class="container-main">
+    <div class="container" id="container-todos">
+        <h1>New item</h1>
+    </div>
+    <div class="container" id="container-Approve">
+        <h1>QA Approve</h1>
+        <h1> ready mp</h1>
+    </div>
+    <div class="container" id="container-doing">
+        <h1>1st Mp</h1>
+    </div>
+    <div class="container" id="container-mp1">
+        <h1>2nd Mp</h1>
+    </div>
+    <div class="container" id="container-mp2">
+        <h1>3rd Mp</h1>
+    </div>
+    <div class="container" id="container-done">
+        <h1>Close</h1>
+    </div>
+</div>
+<h1 class="Footer">&nbsp;</h1>
+<h1 class="Footer"><a href="../index.html"><img src="home.jpg" width="56" height="37" alt="Home"></a></h1>
+<p class="Footer">HOME</p>
+
+<script>
+const draggables = document.querySelectorAll(".draggable");
+const containers = document.querySelectorAll(".container");
+const form = document.querySelector("form");
+const input = document.querySelector("#input");
+const gettodoss = JSON.parse(localStorage.getItem("todoss"));
+
+let todoss = gettodoss !== null ? gettodoss : [];
+
+addtodoss();
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  createtodos();
+  input.value = "";
+});
+
+function createtodos() {
+  if (input.value.trim() == "") {
+    return;
+  }
+
+  const todos = {
+    value: input.value,
+    id: generateId(),
+    container: "container-todos",
+  };
+
+  todoss.push(todos);
+  setLocalStorage();
+  addtodoss();
+}
+function addtodoss() {
+  containers.forEach((container) => {
+    container.innerHTML = `<h1>${container.firstElementChild.textContent}</h1>`;
+  });
+  todoss.forEach((todos) => {
+    const div = document.createElement("div");
+    div.classList.add("draggable");
+    div.draggable = true;
+    div.textContent = todos.value;  // Using textContent instead of innerHTML
+
+    div.id = todos.id;
+
+    div.addEventListener("dragstart", () => {
+      div.classList.add("dragging");
+      containers.forEach((container) => {
+        container.classList.add("over");
+        if (container.id == todos.container) {
+          container.classList.remove("over");
+        }
+      });
+    });
+
+    div.addEventListener("dragend", () => {
+      div.classList.remove("dragging");
+      containers.forEach((container) => {
+        container.classList.remove("over");
+      });
+    });
+
+ // Create a container for buttons with flex layout
+ const buttonsContainer = document.createElement("div");
+    buttonsContainer.style.display = "flex";
+    buttonsContainer.style.justifyContent = "flex-start";  // Align buttons to the left
+
+    // Add Edit button first
+    buttonsContainer.appendChild(createEditBt(div, todos.id));
+
+    // Add Delete button second
+    buttonsContainer.appendChild(createBt(div, todos.id));
+
+    // Append the buttons container to the div
+    div.appendChild(buttonsContainer);
+
+    document.querySelector(`#${todos.container}`).append(div);
+  });
+}
+
+function generateId() {
+  return Math.round(Math.random() * 1000);
+}
+
+function createBt(div, ID) {
+  const bt = document.createElement("button");
+  bt.classList.add("bt");
+  bt.innerHTML = '<img src="delete.png" width="15" height="20">';
+  bt.addEventListener("click", () => {
+    todoss = todoss.filter((todos) => todos.id !== ID);
+
+    div.classList.add("remove");
+
+    setTimeout(() => {
+      addtodoss();
+      setLocalStorage();
+    }, 700);
+  });
+
+  return bt;
+}
+
+// Edit button creation
+function createEditBt(div, ID) {
+  const editBt = document.createElement("button");
+  editBt.classList.add("bt");
+  editBt.innerHTML = '<img src="edit.png" width="15" height="20">';
+  editBt.addEventListener("click", () => {
+    const newValue = prompt("Edit item:", div.textContent); // Prompt for new value
+    if (newValue && newValue.trim() !== "") {
+      const todo = todoss.find((todo) => todo.id === ID);
+      todo.value = newValue.trim(); // Update the value in the todo item
+      setLocalStorage();
+      addtodoss(); // Refresh the display
+    }
+  });
+
+  return editBt;
+}
+
+function setLocalStorage() {
+  localStorage.setItem("todoss", JSON.stringify(todoss));
+}
+
+containers.forEach((container) => {
+  container.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    const dragable = document.querySelector(".dragging");
+    todoss.forEach((todos) => {
+      if (todos.id == dragable.id) {
+        todos.container = container.id;
+        setLocalStorage();
+      }
+    });
+    const afterElement = dragAfter(container, e.clientY);
+    if (afterElement == null) {
+      container.appendChild(dragable);
+    } else {
+      container.insertBefore(dragable, afterElement);
+    }
+  });
+});
+
+function dragAfter(container, y) {
+  const draggableElements = [
+    ...container.querySelectorAll(".draggable:not(.dragging)"),
+  ];
+
+  return draggableElements.reduce(
+    (closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    },
+    {
+      offset: Number.NEGATIVE_INFINITY,
+    }
+  ).element;
+}
+</script>
+
+</body>
+
+</html>

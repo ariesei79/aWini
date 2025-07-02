@@ -1,0 +1,524 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Process Engineering Section</title>
+<link href="header.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+<!--
+.style1 {
+	font-size: 18px;
+	color: #0000FF;
+}
+.style3 {
+	font-size: 18px;
+	font-weight: bold;
+}
+.style4 {color: #FFFF00}
+body {
+	background-image: url(../img/dash-bg-03.jpg);
+}
+body,td,th {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 20px;
+	color: #000;
+}
+-->
+</style>
+</head>
+
+<body class="style3">
+<table width="100%" border="1" cellspacing="0" cellpadding="1">
+  <tr>
+    <th width="9%" rowspan="2" bgcolor="#000000" scope="col"><img src="../icon/sumitomo.png" width="95" height="60" /></th>
+    <th width="80%" rowspan="2" bgcolor="#FF0000" scope="col"><img src="../icon/slogan1.PNG" width="700" height="82" align="absmiddle" /></th>
+    <th width="11%" height="66" bgcolor="#FF0000" scope="col"><img src="../foto/member/Titik.jpg" width="100" height="60" /></th>
+  </tr>
+  <tr>
+    <td height="22" bgcolor="#FFFFFF" class="Header"><strong>PIC</strong></td>
+  </tr>
+</table>
+<table width="100%" border="1" cellspacing="0" cellpadding="1">
+  <tr>
+    <th scope="col"><link href="css/ticker.css" rel="stylesheet" type="text/css" />
+
+  <div id="ticker">
+    <div class="title">NEWS</div>
+    <ul >
+      
+      <li>Selamat datang di Process Engineering Section</li>
+      <li>Process Engineering</li>
+      <li>With SMART to Be Numbe One </li>
+      <li class="style3">Selamat datang di Process Engineering Section</li>
+      <li>Process Engineering</li>
+      <li>With SMART to Be Numbe One </li>
+      <li>Selamat datang di Process Engineering Section</li>
+      <li>Process Engineering</li>
+      <li>With SMART to Be Numbe One </li>
+      </ul>
+  </div></th>
+  </tr>
+</table>
+<th class="style3">
+    <th colspan="2" bgcolor="#000000" class="ATAS" scope="row"><a href="../index.html">Home</a><a href="file:///M:\PE\&#9733;%201.%20DAILY%20MEETING%20PE">PE File</a></th>
+</th>
+
+<span class="style3">
+<table width="100%" border="1" cellspacing="0" cellpadding="1">
+<tr>
+  <th width="48.5%" bgcolor="#000000" class="ATAS" scope="col"><strong>DAILY JOBS</strong></th>
+  <th width="48.5%" bgcolor="#000000" class="ATAS" scope="col"><strong>SAFETY INFORMATION</strong></th>
+</tr>
+  <tr>
+    <th height="600" bgcolor="#000000" class="style3" scope="col"><body>
+   <link href="/css/todo.css" rel="stylesheet" type="text/css" />
+    <link  href="css/todo.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/x-icon" href="css/favicon.ico">
+    <form>
+        <section class="section-1">
+            <input type="text" placeholder="Enter task to do" class="text-input">
+	    <button type="submit" title="Add task" class="add-input"><img src="faplus.png" width="35" height="30"></i></button>
+              </section>
+        </section>
+        <section class="Section-2">
+            <button type="submit" class="remove-completed"><img src="delete.png" width="20" height="20">
+                <div>Remove completed</div>
+            </button>
+        </section>
+        </div>
+    </form>
+    <div class="all-container"></div>
+    <script>
+const inputText = document.querySelector('.text-input');
+const addButton = document.querySelector('.add-input');
+const allContainer = document.querySelector('.all-container');
+const removeCompleted = document.querySelector('.remove-completed');
+
+addButton.addEventListener('click', addTodo);
+
+allContainer.addEventListener('click', (e) => {
+    switch (e.target.classList[0]) {
+        case "completed-button":
+            completeTodo(e.target.parentElement);
+            break;
+
+        case "delete-button":
+            deleteTodo(e.target.parentElement);
+            break;
+
+    }
+});
+
+removeCompleted.addEventListener('click', e => {
+    e.preventDefault();
+    // console.log(allContainer.children);
+    [...allContainer.children].forEach(element => {
+        if (element.classList.contains('completed')) {
+            deleteTodo(element);
+        }
+    })
+});
+
+window.addEventListener('load', loadTodos());
+
+function addTodo(e) {
+    e.preventDefault();
+    let todo = generateTodo(inputText.value);
+    allContainer.appendChild(todo);
+    updateLocalTodos();
+    inputText.value = "";
+}
+
+function generateTodo(input) {
+    if (input.trim() === "") return null;
+    const todoDiv = document.createElement("div");
+    todoDiv.classList.add('todo-item');
+    const text = document.createElement("div");
+    text.classList.add('todo-text');
+    text.innerText = input;
+    todoDiv.appendChild(text);
+    const completedButton = document.createElement("div");
+    completedButton.classList.add('completed-button');
+    completedButton.innerHTML = '<i class="fa-solid fa-check completeBtn"><img src="ceklist.png" width="18" height="22"></i>';
+    todoDiv.appendChild(completedButton);
+    const deleteButton = document.createElement("div");
+    deleteButton.classList.add('delete-button');
+    deleteButton.innerHTML = '<i class="fas fa-trash"><img src="delete.png" width="20" height="20"></i>';
+    todoDiv.appendChild(deleteButton);
+    return todoDiv;
+}
+
+function completeTodo(todo) {
+    if (todo.classList.contains('completed')) {
+        todo.classList.remove('completed');
+    } else {
+        todo.classList.add('completed');
+    }
+    updateLocalTodos();
+}
+
+function deleteTodo(todo) {
+    todo.classList
+    .add('deleted');
+    todo.addEventListener('transitionend', () => {
+        todo.remove();
+        updateLocalTodos();
+    });
+
+}
+
+function updateLocalTodos() {
+    localStorage.setItem('todos(2)', allContainer.innerHTML);
+}
+
+
+function loadTodos() {
+    var localTodos = localStorage.getItem('todos(2)');
+    allContainer.innerHTML = localTodos;
+}
+
+</script>
+</body></th>
+    <th bgcolor="#000000" scope="col">
+      <img src="safety/imagesafety.png" alt="SAFETY" width="94.5%" height="450" align="absmiddle" />
+  
+    </th>
+  </tr>
+  <tr>
+    <th bgcolor="#000000" class="ATAS" scope="col"><strong>OBEYA</strong></th>
+    <th bgcolor="#000000" class="ATAS" scope="col"><strong>SAMPLE INFORMATION</strong></th>
+  </tr>
+  <tr>
+    <th bgcolor="#000000" scope="col"><body>
+    <style>
+        *{
+            font-family:sans-serif;
+        }
+         body{
+          background-color: #34394b;
+       }
+        .container{
+            width: 94.5%;
+            margin: 40px auto;
+        }
+        .form{
+            display: flex;
+            align-items: center;
+            background-color: rgba(238, 238, 238, 0.404);
+            padding: 20px;
+            border-radius:6px;
+        }
+        .form .input{
+            flex: 1;
+            height: 40px;
+            border-radius: 6px;
+            border: none;
+            color: blue;
+            padding: 0 10px;
+            font-size: 13px;
+            transition: 0.3s;
+    
+            
+        }
+        .form .input[type=text]:focus{
+            outline-color: aqua;
+        }
+
+         .form .add{
+            background-color: blue;
+            border-radius: 6px;
+            border: none;
+            color: white;
+            margin-left: 10px;
+            padding:10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+         .form .add:hover{
+            opacity: 1;
+        }
+        .tasks1{
+            border-radius: 6px;
+            background-color: rgba(238, 238, 238, 0.404);
+            margin-top: 20px;
+            padding: 20px;
+        }
+        .tasks1 .task1 {
+        background-color: white;
+        padding: 10px;
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.3s;
+        cursor: pointer;
+        border: none;
+        color: rgb(42, 42, 42);
+      }
+      .tasks1 .task1:not(:last-child) {
+        margin-bottom: 15px;
+      }
+       .tasks1 .task1.done {
+       color: rgba(0, 0, 0, 0.171);
+      }
+       .tasks1 .task1 span{
+        font-size: 13px;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: .3s;
+      }
+       .tasks1 .task1 span.del {
+        background-color: rgba(255, 0, 0, 0.438);
+        padding: 5px 8px;
+        
+      }
+       .tasks1 .task1 span.spanDone{
+        margin-right: 5px;
+        background-color:rgb(25, 221, 25);
+        padding: 5px;
+      }
+       .tasks1 .task1 span.del:hover{
+        background-color:red;
+      }
+      .all{
+          display: flex;
+          width: 300px;
+          justify-content: center;
+          align-items: center;
+          margin: 0 auto;
+      }
+      .deleteAll{
+        width: fit-content;  
+        padding: 8px 20px;
+        font-size: 13px;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: .3s;
+         width: 70px;
+        margin:15px auto;
+        background-color: rgba(255, 0, 0, 0.692);
+        text-align: center;
+      }
+      .doneAll{
+        width: fit-content;  
+        padding: 8px 20px;
+        width: 70px;
+        font-size: 13px;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: .3s;
+        display: none;
+        text-align: center;
+        margin:15px auto;
+        background-color:rgb(25, 221, 25);
+      }
+    
+@media (max-width:600px){
+       .container{
+            width: 400px;
+        }
+             .form{
+            padding: 10px;
+        }
+        .form .input{
+            font-size: 13px;
+        }
+         .form .add{
+            padding:10px 10px;
+            font-size: 13px;
+        }
+          .deleteAll{
+        padding: 8px 10px;
+      }
+       .doneAll{
+        padding: 8px 10px;
+      }
+    
+      .tasks1{
+            padding: 10px;
+        }
+         
+}
+  @media (max-width:400px){
+     
+       .container{
+            width: 300px;
+        }
+    }
+    </style>
+</head>
+<body>
+    
+
+    <div class="container">
+       
+        <div class="form"> 
+            <input type="text" class="input" placeholder="Write Some Thing To Do It">
+            <input type="submit" class="add" value="Add" >
+        </div>
+        <div class="tasks1">  
+            
+        </div>
+        <div class="all">
+              <span class="deleteAll">Delete All</span> 
+              <span class="doneAll">Done All</span>
+        </div>
+          
+    </div>
+    <script>//input for text
+let input = document.querySelector(".input");
+//add button
+let add =document.querySelector(".add");
+let tasks1Div=document.querySelector(".tasks1");
+let deleteAll = document.querySelector(".deleteAll");
+let doneAll = document.querySelector(".doneAll");
+
+let arrayOfTasks1 = [];
+
+if(window.localStorage.getItem("Tasks1")){
+    arrayOfTasks1 = JSON.parse(localStorage.getItem("Tasks1"));
+}
+
+gettaskfromlocal();
+//Add Tasks1
+  
+     
+
+ deleteAll.onclick = function(){
+    localStorage.clear();
+    tasks1Div.innerHTML = "";
+    deleteAll.style.display= "none";
+     doneAll.style.display= "none";
+}
+
+//Done All
+doneAll.addEventListener("click",(e)=>{
+   if(e.target.classList.contains("doneAll")){
+       for(let i = 0; i<arrayOfTasks1.length;i++){
+           if(arrayOfTasks1[i].complated==false){
+               arrayOfTasks1[i].complated = true;
+           }
+       }
+      
+   }
+     addToLocalStorage(arrayOfTasks1);
+    addTasks1Topage(arrayOfTasks1);
+})
+add.onclick = function(){
+   if(input.value != ""){
+       //Function of Add
+       addTasks1ToArray(input.value);
+       input.value = "";
+       deleteAll.style.display= "block";
+       doneAll.style.display= "block";
+   }
+}
+
+tasks1Div.addEventListener("click",(e)=>{
+    if(e.target.classList.contains("del")){
+        deleteTask1FromLocalStorage(e.target.parentElement.parentElement.getAttribute("data-id"));
+        e.target.parentElement.parentElement.remove();
+    }
+    if(e.target.classList.contains("spanDone")){
+        task1Status(e.target.parentElement.parentElement.getAttribute("data-id"));
+        e.target.parentElement.parentElement.classList.toggle("done");
+    }
+
+})
+
+function addTasks1ToArray(task1Text){
+   //Task1 Data
+   const task1 = {
+       id:Date.now(),
+       title:task1Text,
+       complated:false
+   };
+   arrayOfTasks1.push(task1);
+   addTasks1Topage(arrayOfTasks1);
+   addToLocalStorage(arrayOfTasks1);
+}
+function addTasks1Topage(arrayOfTasks1){
+    //Empity input
+    tasks1Div.innerHTML= "";
+    arrayOfTasks1.forEach(task1 => {
+        let div = document.createElement("div");
+        div.className = "task1";
+        if(task1.complated==true){
+            div.className="task1 done";
+        }
+        div.setAttribute("data-id", task1.id);
+        div.appendChild(document.createTextNode(task1.title));
+         let divIcons = document.createElement("div");
+         let doneSpan = document.createElement("span");
+         doneSpan.className= "spanDone";
+         doneSpan.appendChild(document.createTextNode("Done"));
+
+         
+        let span = document.createElement("span");
+        span.className="del";
+        span.appendChild(document.createTextNode("X"));
+        
+        divIcons.appendChild(doneSpan);
+        divIcons.appendChild(span);
+        
+        div.appendChild(divIcons);
+        tasks1Div.appendChild(div);
+      
+
+    });
+}
+
+function addToLocalStorage(arrayOfTasks1){
+    window.localStorage.setItem("Tasks1", JSON.stringify(arrayOfTasks1));
+}
+function gettaskfromlocal(){
+    let data = window.localStorage.getItem("Tasks1");
+    if(data){
+        let task1 = JSON.parse(data);
+         addTasks1Topage(task1);
+         doneAll.style.display= "block";
+    }else{
+        deleteAll.style.display= "none";
+    }
+    
+}
+function deleteTask1FromLocalStorage(task1Id){
+//    for(let i =0;i<arrayOfTasks1.length;i++){
+//        console.log(`${arrayOfTasks1[i].id}==${task1Id}`);
+//    }
+arrayOfTasks1 = arrayOfTasks1.filter((task1) => task1.id != task1Id);
+addToLocalStorage(arrayOfTasks1);
+}
+function task1Status(taskId){
+for(let i =0 ; i<arrayOfTasks1.length;i++){
+    if(arrayOfTasks1[i].id==taskId){
+ if(arrayOfTasks1[i].complated==false){
+        arrayOfTasks1[i].complated=true;
+    }else{
+        arrayOfTasks1[i].complated=false;
+    }
+    }
+    }
+addToLocalStorage(arrayOfTasks1);
+}
+</script>
+</body>
+</th></th>
+    <th bgcolor="#000000" scope="col"><img src="image/sample.jpg" alt="SAMPLE" width="94.5%" height="190%" align="absmiddle" /></th>
+  </tr>
+
+  <tr>
+    <th colspan="2" bgcolor="#000000" class="ATAS" scope="row">Admin PE @Barakids2023 </th>
+  </tr>
+</table>
+</body>
+</html>

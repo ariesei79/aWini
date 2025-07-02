@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Process Engineering Section</title>
+  <link rel="stylesheet" href="./style.css">
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type="text/css">
+<!--
+body {
+	background-color: #D6D6D6;
+	background-image: url(img/dash-bg-03.jpg);
+}
+.footer {	font-size: 18px;
+	color: #FFF;
+	text-align: center;
+}
+.JAM {
+	color: #0FF;
+	font-size: 16px;
+}
+.JAM {
+	font-size: 18px;
+}
+-->
+</style></head>
+<body>
+<p>
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+  <tr>
+    <th width="7%" rowspan="2" scope="col"><img src="icon/sumitomo.png" width="60" height="50"></th>
+    <th width="93%" bgcolor="#FF0000" class="A" scope="col">PROCESS ENGINEERING</th>
+  </tr>
+  <tr>
+    <td align="center" bgcolor="#FFFFFF"><strong class="B">SECTION</strong></td>
+  </tr>
+</table>
+<p>
+ <link rel="stylesheet"  href="css/ticker.css"/>    
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+     <tr>
+       <th align="center" scope="col">
+   <div id="ticker">
+  <div><span class="title">NEWS</span></div>
+  <ul >    
+    <li><span class="style3">Selamat datang di Process Engineering Section</span></li>
+    <li><span class="style3">Process Engineering</span></li>
+    <li>With SMART to Be Numbe One </li>
+    <li><span class="style3">Selamat datang di Process Engineering Section</span></li>
+    <li><span class="style3">Process Engineering</span></li>
+    <li>With SMART to Be Numbe One </li>
+    <li><span class="style3">Selamat datang di Process Engineering Section</span></li>
+    <li><span class="style3">Process Engineering</span></li>
+    <li>With SMART to Be Numbe One </li>
+    </ul>
+</div>
+
+
+<p>
+<link rel="stylesheet" href="css/stylemarque.css">
+<!-- partial:index.partial.html -->
+<div class="marquee">
+  <div class="marquee-content"> 
+    <div class="marquee-item">
+
+      <img  src="img/slide/hloss.png" width="4" height="70">
+    </div>
+    
+    <div class="marquee-item">
+      <img  src="img/slide/vloss.png" width="4" height="70">
+    </div>
+    
+    <div class="marquee-item">
+      <img  src="img/slide/halarm.png" width="4" height="70">
+    </div>
+    
+    <div class="marquee-item">
+      <img  src="img/slide/valarm.png" width="4" height="70">
+    </div>
+    
+    <div class="marquee-item">
+      <img  src="img/slide/vstart.png" width="4" height="70">
+    </div>
+    
+    <div class="marquee-item">
+      <img  src="img/slide/hstart.png" width="4" height="70">
+    </div>
+    
+    <div class="marquee-item">
+     <img  src="img/slide/sampleevaluasi.png" width="4" height="70">
+    </div>
+    
+    <div class="marquee-item">
+     <img  src="img/slide/samplescrap.png" width="4" height="70">
+    </div>
+<div class="marquee-item">
+     <img  src="img/slide/oee.png" width="4" height="70">
+    </div>
+     <div class="marquee-item">
+     <img  src="whiteboard/safety/imageimprove.png" width="4" height="70">
+    </div>
+      
+  </div>
+</div>
+<!-- partial -->
+</p>
+
+<script type="text/javascript">
+   var ziarray=new Array("Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu")
+    var lunaarray=new Array ("Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember")
+
+    function datacom() {
+      var mydate=new Date()
+      var year=mydate.getYear()
+      if (year < 1000)
+        year+=1900
+      var day=mydate.getDay()
+      var month=mydate.getMonth()
+      var daym=mydate.getDate()
+      if (daym<10)
+        daym="0"+daym
+      var hours=mydate.getHours()
+      var minutes=mydate.getMinutes()
+      var seconds=mydate.getSeconds()
+      var dn="AM"
+      if (hours>=12)
+        dn="PM"
+      if (hours>12) {
+        hours=hours-12
+      }
+      if (hours==0)
+        hours=12
+      if (minutes<=9)
+        minutes="0"+minutes
+      if (seconds<=9)
+        seconds="0"+seconds
+    
+     var cdate="<small><font color='#00ffff' face='Arial'><b>"+ziarray[day]+", "+daym+" "+lunaarray[month]+" "+year+"<br> "+hours+":"+minutes+":"+seconds+" "+dn
+    +"</b></font></big>"
+
+ 
+      document.getElementById("data").innerHTML=cdate
+    }
+
+    function arata() {
+      if (document.getElementById("data"))
+        setInterval("datacom()",1000)
+    }
+    window.onload=arata;
+    </script> <div style="width:200px; background-color:black; text-align:center" id="data"></div>
+
+<div class="menu">
+  <a class="coolButton" href="#">GENERAL</a>
+  <a class="coolButton" href="./qloss/index.html">QLOSS MONITORING</a>
+  <a class="coolButton" href="kanban1/index.html">WEEKLY JOBS</a>
+  <a class="coolButton" href="whiteboard2/index.html">WHITE BOARDS</a>
+  <a class="coolButton" href="slogan/index.html">PE SLOGAN</a>
+  <a class="coolButton" href="visi/index.html">VISI MISI</a>
+</div>
+
+  <!-- partial -->
+  <script  src="./script.js"></script>
+</p>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <th scope="col"><span class="footer">Created By : Barakids © 2021 Admin Dashboard . Process Engineering Dept.</span></th>
+  </tr>
+</table>
+<p>&nbsp;
+       </body>
+</html>

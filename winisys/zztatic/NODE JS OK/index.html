@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between; /* Align content with space between */
+            align-items: center; /* Vertically center items */
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 200px;
+        }
+        button {
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .delete-btn {
+            background-color: #f44336;
+            margin-left: 10px;
+        }
+        .edit-btn {
+            background-color: #ffa500;
+            margin-left: 10px;
+        }
+        .task-buttons {
+            display: flex;
+            justify-content: flex-end; /* Align buttons to the right */
+            gap: 10px; /* Space between the buttons */
+        }
+        #time {
+            font-size: 1.2em;
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #activeTasks {
+            font-size: 1.2em;
+            color: #007BFF; /* Set color to blue */
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <!-- Menampilkan Tanggal dan Jam -->
+    <div id="time"></div>
+
+    <!-- Menampilkan Jumlah Task Aktif -->
+    <div id="activeTasks"></div>
+    <input type="text" id="todoInput" placeholder="Add a new task...">
+    <button onclick="addTask()">Add Task</button>
+
+    <ul id="todoList"></ul>
+
+    <script>
+        let tasks = []; // Array untuk menyimpan task lokal
+
+        // Fungsi untuk mengambil dan menampilkan tugas dari server
+        function loadTasks() {
+            fetch('/tasks')
+                .then(response => response.json())
+                .then(data => {
+                    tasks = data.tasks; // Menyimpan data tugas yang diterima
+
+                    const todoList = document.getElementById('todoList');
+                    todoList.innerHTML = '';  // Clear previous tasks
+
+                    tasks.forEach(task => {
+                        const li = document.createElement('li');
+                        li.textContent = task.task;
+
+                        // Div untuk tombol edit dan delete
+                        const buttonsDiv = document.createElement('div');
+                        buttonsDiv.classList.add('task-buttons');
+
+                        // Edit button
+                        const editBtn = document.createElement('button');
+                        editBtn.textContent = 'Edit';
+                        editBtn.className = 'edit-btn';
+                        editBtn.onclick = () => editTask(task.id, task.task);
+
+                        // Delete button
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = 'Delete';
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.onclick = () => deleteTask(task.id);
+
+                        buttonsDiv.appendChild(editBtn);
+                        buttonsDiv.appendChild(deleteBtn);
+
+                        // Tambahkan tombol ke dalam item tugas
+                        li.appendChild(buttonsDiv);
+                        todoList.appendChild(li);
+                    });
+
+                    updateActiveTasks(); // Memperbarui jumlah task aktif setelah memuat tugas
+                });
+        }
+
+        // Fungsi untuk menambahkan tugas baru
+        function addTask() {
+            const input = document.getElementById('todoInput');
+            const newTask = input.value.trim();
+
+            if (newTask === '') return;
+
+            fetch('/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task: newTask })
+            })
+            .then(response => response.json())
+            .then(() => {
+                input.value = '';  // Clear input field
+                loadTasks();  // Refresh the task list
+            });
+        }
+
+        // Fungsi untuk mengedit tugas
+        function editTask(taskId, oldTask) {
+            const newTask = prompt('Edit your task:', oldTask);
+
+            if (newTask === null || newTask.trim() === '') return;
+
+            fetch(`/tasks/${taskId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task: newTask })
+            })
+            .then(() => loadTasks());  // Refresh the task list after update
+        }
+
+        // Fungsi untuk menghapus tugas
+        function deleteTask(taskId) {
+            fetch(`/tasks/${taskId}`, { method: 'DELETE' })
+                .then(() => loadTasks());  // Refresh the task list after deletion
+        }
+
+        // Fungsi untuk menampilkan tanggal dan jam saat ini
+        function updateTime() {
+            const timeDiv = document.getElementById('time');
+            const currentTime = new Date();
+            const hours = currentTime.getHours().toString().padStart(2, '0');
+            const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+            const seconds = currentTime.getSeconds().toString().padStart(2, '0');
+            const day = currentTime.getDate();
+            const month = currentTime.getMonth() + 1; // Bulan dimulai dari 0
+            const year = currentTime.getFullYear();
+
+            const formattedTime = `${hours}:${minutes}:${seconds}`;
+            const formattedDate = `${day}/${month}/${year}`;
+
+            timeDiv.textContent = `Tanggal: ${formattedDate}, Waktu: ${formattedTime}`;
+
+            // Memperbarui setiap detik
+            setTimeout(updateTime, 1000);
+        }
+
+        // Fungsi untuk menghitung dan menampilkan jumlah task aktif
+        function updateActiveTasks() {
+            const activeTasksDiv = document.getElementById('activeTasks');
+            const activeTaskCount = tasks.filter(task => !task.completed).length; // Menghitung task yang belum selesai
+
+            activeTasksDiv.textContent = `Active Tasks: ${activeTaskCount}`;
+        }
+
+        // Memanggil fungsi updateTime untuk menampilkan waktu saat halaman dimuat
+        updateTime();
+
+        // Load tasks on page load
+        loadTasks();
+    </script>
+</body>
+</html>

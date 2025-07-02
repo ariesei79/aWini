@@ -1,0 +1,2 @@
+const baraAppRoute = require('./routes/baraApp');
+app.use('/baraApp', baraAppRoute);

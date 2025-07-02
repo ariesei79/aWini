@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sumitomo Electric Wintec Indonesia Quality Database System</title>
+    <link rel="icon" type="image/png" href="icon/sumitomo.png" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tiff.js/1.0.0/tiff.min.js"></script> 
+    <style>
+        body {
+            background: url('icon/bg.png') no-repeat center center fixed;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 40px;
+            padding-bottom: 60px; /* Memberikan ruang agar konten tidak tertutup footer */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        /* HEADER */
+        .header-container {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            padding: 10px 0;
+            background: linear-gradient(to right, #ff0000, #ffffff);
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+        .header-logo {
+            width: 90px;
+            margin-right: 10px;
+        }
+        .header-text {
+            color: black;
+        }
+        .header-top {
+            font-size: 30px;
+            font-weight: bold;
+        }
+        .header-bottom {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+            margin-top: 100px; /* Jarak dari header */
+        }
+
+        #searchContainer {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #searchInput {
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+            width: 600px;
+            border: 4px solid blue;
+            border-radius: 25px 0 0 25px; /* Rounded corners */
+            outline: none; /* Remove outline */
+            transition: border 0.3s;
+        }
+
+        #searchInput:focus {
+            border-color: #45a049; /* Change border color on focus */
+        }
+
+        #searchBtn {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: solid blue;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 0 25px 25px 0; /* Rounded corners */
+            margin-left: -5px; /* Merge with input */
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s; /* Add transition */
+        }
+
+        #searchBtn:hover {
+            background-color: #45a049;
+            transform: translateY(-1px); /* Slight lift effect */
+        }
+
+        #results {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Full width */
+        }
+
+        .result-item {
+            display: flex; /* Flexbox untuk letak thumbnail dan text */
+            align-items: center; /* Vertically center */
+            background: white;
+            border: 2px solid blue;
+            border-radius: 10px; /* Rounded corners */
+            padding: 10px; /* Padding untuk item hasil */
+            margin: 10px 0;
+            width: 100%; /* Atur lebar elemen hasil */
+            box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2); /* Efek bayangan */
+            transition: transform 0.3s, box-shadow 0.3s; /* Transisi */
+        }
+
+        .result-item:hover {
+            transform: translateY(-5px); /* Efek hover */
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.3); /* Memperbesar bayangan saat hover */
+        }
+
+        .result-item a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-size: large;
+            font-weight: bold;
+            flex-grow: 1; /* Mengisi ruang yang ada */
+            margin-left: 10px; /* Jarak antara thumbnail dan teks */
+        }
+
+        .result-item a:hover {
+            color: #45a049;
+        }
+
+        /* Style gambar thumbnail */
+        .result-image {
+            max-width: 50px; /* Sesuaikan dengan ukuran border link */
+            height: auto; /* Tetap proporsional */
+            border: 2px solid blue; /* Border berwarna biru */
+            border-radius: 5px; /* Rounded corners */
+            padding: 5px; /* Ruang dalam untuk border */
+            background-color: rgba(76, 175, 80, 0.1); /* Warna latar belakang */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Efek bayangan thumbnail */
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #333;
+            color: white;
+            font-size: 18px;
+            width: 100%;
+            position: fixed; /* Fix the position */
+            bottom: 0; /* Stay at the bottom */
+        }
+
+        /* Style untuk jam */
+        #clock {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #4CAF50;
+        }
+
+        /* Style untuk nama folder */
+        .folder-name {
+            font-weight: bold; /* Membuat teks tebal */
+            font-size: large;
+            color: blue; /* Warna biru */
+            margin-right: 5px; /* Memberi sedikit ruang di sebelah kanan */
+        }
+
+        .folder-label {
+            font-weight: bold; /* Membuat teks tebal */
+            font-size: large;
+            color: blue; /* Warna teks */
+            margin-right: 5px; /* Jarak antara label dan nama folder */
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="header-content">
+            <img src="icon/sumitomo.png" alt="Sumitomo Logo" class="header-logo" />
+            <div class="header-text">
+                <div class="header-top">PT.Sumitomo Electric Wintec Indonesia</div>
+                <div class="header-bottom">Quality Database System</div>
+            </div>
+        </div>
+    </div>
+    <h1></h1>
+
+    <!-- Elemen jam -->
+    <div id="clock"></div> 
+
+    <div id="searchContainer">
+        <input type="text" id="searchInput" placeholder="Enter file name...">
+        <button id="searchBtn">Search</button>
+    </div>
+    <div id="results"></div>
+    <footer>
+        Copyright 2025 Barakids Admin Dashboard. Process Engineering Dept.
+    </footer>
+    <script>
+        // Fungsi untuk menampilkan jam
+        function updateClock() {
+            const now = new Date();
+            
+            // Mendapatkan nama hari
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayName = days[now.getDay()];
+
+            // Membangun tanggal dalam format DD/MM/YYYY
+            const date = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // Bulan dimulai dari 0
+            const year = now.getFullYear();
+            
+            // Mendapatkan waktu dalam format 24 jam
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            // Menampilkan jam, tanggal, dan nama hari
+            document.getElementById('clock').innerText = `${dayName}, ${date}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+        }
+
+        // Memperbarui jam setiap detik
+        setInterval(updateClock, 1000);
+        updateClock(); // Panggil sekali di awal untuk menampilkan jam segera
+
+        // Function to perform search
+        function performSearch(query) {
+            fetch(`/search?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsContainer = document.getElementById('results');
+                    resultsContainer.innerHTML = ''; // Clear previous results
+
+                    // Clear the search input
+                    document.getElementById('searchInput').value = ''; // Kosongkan input setelah pencarian
+
+                    if (data.length === 0) {
+                        resultsContainer.innerHTML = '<p>No results found</p>';
+                    } else {
+                        data.forEach(filePath => {
+                            const resultItem = document.createElement('div');
+                            resultItem.className = 'result-item';
+                            
+                            // Membagi path untuk mendapatkan nama folder kedua
+                            const pathParts = filePath.split('/');
+                            const secondFolderName = pathParts.length > 2 ? pathParts[pathParts.length - 2] : '';
+
+                            // Menambahkan label "FOLDER:" dan nama folder kedua
+                            const folderLabel = document.createElement('span');
+                            folderLabel.className = 'folder-label';
+                            folderLabel.innerText = "FOLDER:"; // Teks "FOLDER:"
+                            resultItem.appendChild(folderLabel);
+
+                            const folderNameElement = document.createElement('span');
+                            folderNameElement.className = 'folder-name';
+                            folderNameElement.innerText = secondFolderName; // Menyimpan nama folder kedua
+                            resultItem.appendChild(folderNameElement);
+
+                            const anchor = document.createElement('a');
+                            anchor.href = filePath; // Gunakan URL yang disediakan oleh server
+                            anchor.target = '_blank'; // Buka di tab baru
+                            anchor.innerText = filePath.split('/').pop(); // Tampilkan nama file
+                            resultItem.appendChild(anchor); // Tambahkan elemen anchor
+
+                            // Cek jenis file dan tampilkan thumbnail jika perlu
+                            if (filePath.endsWith('.tif')) {
+                                const img = document.createElement('img');
+                                img.src = 'icon/tiff-icon.png'; // Ganti dengan URL image
+                                img.alt = 'TIF Image';
+                                img.className = 'result-image';
+                                resultItem.prepend(img); // Tampilkan thumbnail di kiri
+                            } else if (filePath.endsWith('.tiff')) {
+                                const img = document.createElement('img');
+                                img.src = 'icon/tiff-icon.png'; // Ikon untuk TIFF
+                                img.alt = 'Image Document';
+                                img.className = 'result-image';
+                                resultItem.prepend(img); // Tampilkan ikon TIFF di kiri
+                            } else if (filePath.endsWith('.pdf')) {
+                                const img = document.createElement('img');
+                                img.src = 'icon/pdf-icon.png'; // Ikon untuk PDF
+                                img.alt = 'PDF Document';
+                                img.className = 'result-image';
+                                resultItem.prepend(img); // Tampilkan ikon PDF di kiri
+                            } else if (filePath.endsWith('.jpg')) {
+                                const img = document.createElement('img');
+                                img.src = 'icon/jpg-icon.png'; // Ikon untuk JPEG
+                                img.alt = 'Image Document';
+                                img.className = 'result-image';
+                                resultItem.prepend(img); // Tampilkan ikon JPEG di kiri
+                            } else if (filePath.endsWith('.xls')) {
+                                const img = document.createElement('img');
+                                img.src = 'icon/xls-icon.png'; // Ikon untuk Excel
+                                img.alt = 'Excel Document';
+                                img.className = 'result-image';
+                                resultItem.prepend(img); // Tampilkan ikon Excel di kiri
+                            } else if (filePath.endsWith('.xlsx')) {
+                                const img = document.createElement('img');
+                                img.src = 'icon/xlsx-icon.png'; // Ikon untuk Excel
+                                img.alt = 'Excel Document';
+                                img.className = 'result-image';
+                                resultItem.prepend(img); // Tampilkan ikon Excel di kiri
+                            } else if (filePath.endsWith('.krd')) {
+                                const img = document.createElement('img');
+                                img.src = 'icon/krd-icon.png'; // Ikon untuk KRD
+                                img.alt = 'KRD Document';
+                                img.className = 'result-image';
+                                resultItem.prepend(img); // Tampilkan ikon KRD di kiri
+                            }
+
+                            resultsContainer.appendChild(resultItem);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const resultsContainer = document.getElementById('results');
+                    resultsContainer.innerHTML = '<p>Error fetching results</p>';
+                });
+        }
+
+        // Event listener untuk tombol pencarian
+        document.getElementById('searchBtn').onclick = function () {
+            const query = document.getElementById('searchInput').value;
+            performSearch(query);
+        };
+
+        // Event listener untuk menekan tombol "Enter"
+        document.getElementById('searchInput').addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                const query = document.getElementById('searchInput').value;
+                performSearch(query);
+                event.preventDefault(); // Mencegah form submit yang tidak diinginkan
+            }
+        });
+    </script>
+</body>
+</html>

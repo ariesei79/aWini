@@ -1,0 +1,305 @@
+/* Styling umum */
+
+body {
+    background: url('public/icon/bg.png') no-repeat center center fixed; /* Pastikan path icon/bg.png benar */
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding-bottom: 80px; /* Tambahkan padding agar footer tidak menutupi konten */
+    padding-top: 130px; /* Tambahkan padding agar header tidak menutupi konten */
+}
+
+/* Header */
+.header-container {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    padding: 10px 0;
+    background: linear-gradient(to right, #ff0000, #ffffff); /* Contoh gradient merah-putih */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Tambahkan shadow untuk efek raised */
+}
+
+.header-content {
+    display: flex;
+    align-items: left;
+    justify-content: flex-start;
+    padding: 0 20px; /* Padding horizontal */
+    max-width: 800px; /* Sesuaikan dengan lebar container utama */
+    margin: auto; /* Tengahkan header content */
+}
+
+.header-logo {
+    width: 90px; /* Sesuaikan ukuran logo */
+    height: auto;
+    margin-right: 15px;
+}
+
+.header-text {
+    color: black;
+}
+
+.header-top {
+    font-size: 30px; /* Ukuran font judul atas */
+    font-weight: bold;
+    text-align: left;
+    
+}
+
+.header-bottom {
+    font-size: 25px; /* Ukuran font judul bawah */
+    font-weight: bold;
+    color: #333; /* Warna sedikit lebih gelap */
+    text-align: left;
+}
+
+/* DateTime */
+#datetime {
+    color: blue;
+    font-size: 22px;
+    margin: 10px;
+    text-align: center;
+    margin-bottom: 20px; /* Jarak bawah setelah datetime */
+}
+
+/* Container */
+.container {
+    max-width: 90%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9); /* Background putih semi-transparan */
+    border-radius: 8px; /* Sudut membulat */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Shadow container */
+}
+
+/* Judul dalam container */
+.container h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Kontrol form */
+.folder-container,
+.container > div[style*="margin-top"] {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Scanner */
+#reader {
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden; /* Pastikan video scanner tidak keluar dari border */
+}
+
+#scan-result {
+    margin-top: 15px;
+    font-size: 1.1em;
+    color: #007bff; /* Warna biru */
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1001; /* Lebih tinggi dari header */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6); /* Background lebih gelap */
+    padding-top: 60px; /* Padding atas agar tidak tertutup header */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* Jarak dari atas dan tengah */
+    padding: 30px;
+    border: 1px solid #888;
+    width: 90%; /* Lebar modal */
+    max-width: 500px; /* Lebar maksimum */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.modal-content label {
+    display: block; /* Setiap radio button di baris baru */
+    margin-bottom: 10px;
+    font-weight: normal;
+}
+
+.modal-content button {
+    margin-top: 15px;
+    margin-right: 10px;
+}
+
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 35px; /* Ukuran close button */
+    font-weight: bold;
+    position: absolute; /* Posisikan absolut di dalam modal-content */
+    top: 10px;
+    right: 15px;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Button Styling */
+button {
+    padding: 10px 15px;
+    cursor: pointer;
+    margin: 5px 0; /* Margin atas/bawah */
+    background-color: #007bff; /* Warna biru standar */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background-color 0.3s ease; /* Transisi warna saat hover */
+}
+
+button:hover {
+    background-color: #0056b3; /* Warna biru lebih gelap saat hover */
+}
+
+button:active {
+     background-color: #004085; /* Warna biru paling gelap saat diklik */
+}
+
+#save-all-btn {
+    background-color: #28a745; /* Warna hijau */
+}
+#save-all-btn:hover {
+    background-color: #218838;
+}
+
+#clear-data-btn {
+     background-color: #dc3545; /* Warna merah */
+}
+#clear-data-btn:hover {
+     background-color: #c82333;
+}
+
+
+/* Collected Data List */
+#collected-data-list {
+    list-style: none; /* Hapus bullet points */
+    padding: 0;
+    margin-top: 15px;
+    border-top: 1px solid #eee; /* Garis pemisah */
+    padding-top: 10px;
+}
+
+#collected-data-list li {
+    background-color: #e9ecef; /* Background item list */
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border-left: 5px solid #007bff; /* Garis kiri biru */
+}
+
+
+/* Styling untuk tabel data dari database */
+.data-table {
+    width: 100%;
+    border-collapse: collapse; /* Menghilangkan spasi antar border sel */
+    margin-top: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: #fff; /* Background putih untuk tabel */
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid #ddd; /* Border antar sel */
+    padding: 10px;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: #f2f2f2; /* Background abu-abu untuk header */
+    font-weight: bold;
+    color: #333;
+}
+
+.data-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Warna background untuk baris genap */
+}
+
+.data-table tbody tr:hover {
+    background-color: #e9e9e9; /* Warna background saat hover */
+}
+
+#database-data-status {
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 15px;
+    background: #333;
+    color: white;
+    font-size: 18px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1000; /* Pastikan footer di atas konten tapi di bawah modal */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .header-top {
+        font-size: 24px;
+    }
+    .header-bottom {
+        font-size: 20px;
+    }
+    .header-logo {
+        width: 70px;
+    }
+    #datetime {
+        font-size: 18px;
+    }
+    .container {
+        padding: 15px;
+    }
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+    button {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    footer {
+        font-size: 16px;
+        padding: 10px;
+    }
+}

@@ -1,0 +1,1 @@
+app.use('/kanbanku/avatar', express.static(path.join(__dirname, 'winisys/zztatic/kanbanku/avatar')));

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Checklist Barcode</title>
+    <link rel="icon" type="image/png" href="icon/sumitomo.png">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body {
+            background: url('icon/bg.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            margin: 0; /* Hapus margin dari body */
+            padding-bottom: 60px; /* Space untuk footer yang fixed */
+        }
+
+        /* HEADER */
+        .header-container {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            padding: 10px 0; /* Padding untuk header */
+            background: linear-gradient(to right, #ff0000, #ffffff); /* Warna merah dan putih */
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center; /* Memusatkan elemen secara vertikal */
+            justify-content: flex-start; /* Mengatur elemen ke kiri */
+            padding: 10px; /* Menambahkan padding untuk header */
+        }
+
+        .header-logo {
+            width: 90px; /* Lebar logo */
+            height: auto; /* Menjaga proporsi gambar */
+            margin-right: 10px; /* Spacing di sebelah kanan logo */
+        }
+
+        .header-text {
+            color: black; /* Warna teks */
+        }
+
+        .header-top {
+            font-size: 30px; /* Ukuran font judul perusahaan */
+            font-weight: bold;
+        }
+
+        .header-bottom {
+            font-size: 25px; /* Ukuran font untuk sistem database */
+            font-weight: bold;
+        }
+
+        /* DATETIME */
+        #datetime {
+            color: blue;
+            font-size: 22px;
+            margin: 10px;
+            text-align: center;
+            margin-top: 120px;
+        }
+        
+        /* Rest of the styles... */
+        body { font-family: Arial, sans-serif; margin: 0; }
+        h1 { text-align: center; }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 100px; /* Padding bawah untuk konten, footer tidak menutupi konten */
+            margin-top: 20px; /* Tambahkan margin-top agar tidak tertutup header */
+        }
+        .area { margin: 10px 0; }
+        button { padding: 10px; cursor: pointer; margin: 5px; background-color: blue; color: white; border: none; }
+        button:active { background-color: green; }
+        .row { display: flex; align-items: flex-start; justify-content: space-between; }
+        .result-box { margin-left: 20px; display: none; }
+        .folder-container { display: flex; align-items: center; margin-bottom: 20px; }
+        .folder-container button { margin-left: 10px; }
+        #folderPath { margin-left: 10px; }
+        .checklist-container { display: flex; }
+        .checklist-area { margin-right: 20px; }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #333;
+            color: white;
+            font-size: 18px;
+            position: fixed; /* Menggunakan posisi fixed */
+            bottom: 0; /* Letakkan footer di bagian bawah */
+            left: 0; /* Pastikan footer berada di sebelah kiri */
+            right: 0; /* Pastikan footer berada di sebelah kanan */
+            width: 100%; /* Mengatur lebar footer */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header-container">
+        <div class="header-content">
+            <img src="icon/sumitomo.png" alt="Sumitomo Logo" class="header-logo">
+            <div class="header-text">
+                <div class="header-top">PT.Sumitomo Electric Wintec Indonesia</div>
+                <div class="header-bottom">Quality Database System</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATETIME -->
+    <div id="datetime"></div>
+
+    <div class="container">
+        <h1>Daily Checklist Barcode</h1>
+
+        <!-- Pilih Folder -->
+        <div class="folder-container">
+            <label for="folderInput">Pilih Folder Penyimpanan:</label>
+            <button onclick="chooseFolder()">Pilih Folder</button>
+            <span id="folderPath">Belum ada folder dipilih</span>
+        </div>
+
+        <!-- Scanner Barcode -->
+        <div id="reader" style="width: 100%; display: none;"></div>
+
+        <!-- Daftar Area -->
+        <div class="row">
+            <div class="checklist-container">
+                <div class="checklist-area">
+                    <h2>Checklist Area</h2>
+                    <div id="area-checklist">
+                        <label class="area"><input type="radio" name="area" value="bw supply" onchange="checkChecklist()"> BW Supply</label><br>
+                        <label class="area"><input type="radio" name="area" value="final dies felt" onchange="checkChecklist()"> Final Dies Felt</label><br>
+                        <label class="area"><input type="radio" name="area" value="inline air wipper" onchange="checkChecklist()"> Inline Air Wipper</label><br>
+                        <label class="area"><input type="radio" name="area" value="felt back oven" onchange="checkChecklist()"> Felt Back Oven</label><br>
+                    </div>
+                </div>
+                <div class="checklist-area">
+                    <h2>Shift</h2>
+                    <div id="shift-checklist">
+                        <label class="area"><input type="radio" name="shift" value="Shift 1" onchange="checkChecklist()"> Shift 1</label><br>
+                        <label class="area"><input type="radio" name="shift" value="Shift 2" onchange="checkChecklist()"> Shift 2</label><br>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tombol Simpan Checklist -->
+            <button id="simpan-checklist" style="display: none;" onclick="submitChecklist()">Simpan Checklist</button>
+
+            <!-- Hasil Scan -->
+            <div class="result-box" id="result-box">
+                <h2>Hasil</h2>
+                <div id="result"></div>
+                <button id="exportButton" style="display: none;" onclick="exportData()">Export Data</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Copyright 2025 Admin Dashboard . Process Engineering Dept.
+    </footer>
+
+    <script>
+        let selectedFolderHandle = null;
+        let barcodeHasil = '';
+        let lastBarcode = localStorage.getItem('lastBarcode');
+
+        // Pilih Folder Penyimpanan
+        async function chooseFolder() {
+            if (window.showDirectoryPicker) {
+                try {
+                    selectedFolderHandle = await window.showDirectoryPicker();
+                    document.getElementById('folderPath').textContent = `Folder: ${selectedFolderHandle.name}`;
+                    document.getElementById('reader').style.display = 'block';
+                    startScanner();
+                } catch (error) {
+                    console.error("Pemilihan folder dibatalkan", error);
+                    alert("Gagal memilih folder. Coba lagi!");
+                }
+            } else {
+                alert("Browser Anda tidak mendukung Directory Picker API");
+            }
+        }
+
+        // Inisialisasi Scanner
+        const scanner = new Html5Qrcode("reader");
+
+        function startScanner() {
+            scanner.start(
+                { facingMode: "environment" },
+                { fps: 20, qrbox: 300 },
+                (decodedText) => {
+                    barcodeHasil = decodedText.trim().toLowerCase();
+                    const areaChecked = document.querySelector('input[name="area"]:checked');
+
+                    if (areaChecked) {
+                        const checklistHasil = areaChecked.value.toLowerCase();
+                        if (checklistHasil === barcodeHasil) {
+                            localStorage.setItem('lastBarcode', barcodeHasil);
+                            checkChecklist();
+                        } else {
+                            alert("Hasil scan tidak sesuai!");
+                            resetChecklist();
+                            startScanner(); // Restart scanner
+                        }
+                    } else {
+                        alert("Pilih area terlebih dahulu!");
+                    }
+                },
+                (errorMessage) => {
+                    console.warn("Scan Error:", errorMessage);
+                }
+            ).catch((err) => {
+                console.error("Error starting scanner:", err);
+            });
+        }
+
+        function checkChecklist() {
+            const areaChecked = document.querySelector('input[name="area"]:checked');
+            const shiftChecked = document.querySelector('input[name="shift"]:checked');
+
+            // Update kondisi untuk menampilkan tombol export
+            if (areaChecked && shiftChecked && barcodeHasil) {
+                document.getElementById('simpan-checklist').style.display = 'block';
+                document.getElementById('exportButton').style.display = 'block'; // Tampilkan tombol export
+            } else {
+                document.getElementById('simpan-checklist').style.display = 'none';
+                document.getElementById('exportButton').style.display = 'none'; // Sembunyikan tombol export
+            }
+        }
+
+        function submitChecklist() {
+            if (!selectedFolderHandle) {
+                alert("Harap pilih folder terlebih dahulu!");
+                return;
+            }
+
+            const areaChecked = document.querySelector('input[name="area"]:checked');
+            const shiftChecked = document.querySelector('input[name="shift"]:checked');
+
+            if (!areaChecked || !shiftChecked) {
+                alert("Pilih area dan shift terlebih dahulu!");
+                return;
+            }
+
+            const timestamp = new Date().toISOString();
+            const hasil = `Barcode: ${barcodeHasil}<br>Area: ${areaChecked.value}<br>Shift: ${shiftChecked.value}<br>Waktu: ${timestamp}`;
+
+            document.getElementById('result').innerHTML = hasil;
+            document.getElementById('result-box').style.display = 'block';
+            document.getElementById('simpan-checklist').style.display = 'none';
+
+            const existingData = JSON.parse(localStorage.getItem('checklistData') || '[]');
+            existingData.push({ barcode: barcodeHasil, area: areaChecked.value, shift: shiftChecked.value, time: timestamp });
+            localStorage.setItem('checklistData', JSON.stringify(existingData));
+
+            alert("Checklist disimpan!");
+        }
+
+        async function exportData() {
+            if (!selectedFolderHandle) {
+                alert("Harap pilih folder terlebih dahulu!");
+                return;
+            }
+
+            const data = JSON.parse(localStorage.getItem('checklistData') || '[]');
+            if (data.length === 0) {
+                alert("Tidak ada data untuk diekspor!");
+                return;
+            }
+
+            let csvContent = "Barcode,Area,Shift,Waktu\n";
+            data.forEach(item => {
+                csvContent += `${item.barcode},${item.area},${item.shift},${item.time}\n`;
+            });
+
+            const now = new Date();
+            const dateStr = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`;
+            const timeStr = `${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}`;
+            const fileName = `checklist_${dateStr}_${timeStr}.csv`;
+
+            try {
+                const fileHandle = await selectedFolderHandle.getFileHandle(fileName, { create: true });
+                const writable = await fileHandle.createWritable();
+                await writable.write(csvContent);
+                await writable.close();
+
+                alert(`Data berhasil disimpan di folder: ${selectedFolderHandle.name}`);
+                resetChecklist();
+
+                // Menghapus semua data yang berkaitan dengan checklist
+                localStorage.removeItem('checklistData'); // Hapus data checklist
+                localStorage.removeItem('lastBarcode'); // Hapus barcode terakhir
+
+                // Reset barcode hasil
+                barcodeHasil = ''; // Hapus hasil scan yang tersimpan
+            } catch (error) {
+                console.error("Gagal menyimpan file", error);
+                alert("Terjadi kesalahan saat menyimpan file.");
+            }
+        }
+
+        function resetChecklist() {
+            document.getElementById('result-box').style.display = 'none';
+
+            const areaRadios = document.querySelectorAll('input[name="area"]');
+            areaRadios.forEach(radio => radio.checked = false);
+
+            const shiftRadios = document.querySelectorAll('input[name="shift"]');
+            shiftRadios.forEach(radio => radio.checked = false);
+
+            document.getElementById('simpan-checklist').style.display = 'none';
+            document.getElementById('exportButton').style.display = 'none'; // Sembunyikan tombol export
+            barcodeHasil = ''; // Hapus hasil scan yang tersimpan
+        }
+
+        // Update tanggal dan waktu
+        setInterval(() => {
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('id-ID', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            const formattedTime = now.toLocaleTimeString();
+            document.getElementById('datetime').innerText = `${formattedDate} ${formattedTime}`;
+        }, 1000);
+    </script>
+</body>
+</html>

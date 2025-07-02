@@ -1,0 +1,109 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#log {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#log a {
+  padding-right: 50mm;
+  display: inline;
+  /* margin-left: 10px; */
+  font-size: 20px;
+  font-family: "Trebuchet MS";
+}
+#top-head {
+  position: sticky;
+  font-size: 24px;
+  background-color: #7eb7f0;
+  top: 0;
+  padding: 2px;
+  z-index: 2;
+}
+
+#top-head.tittle {
+  padding: 0;
+}
+
+#title,
+#excel-file,
+#container1,
+#container2 {
+  margin: 0;
+  padding: 10;
+}
+
+.navigasi {
+  padding-bottom: 10px;
+}
+.aa {
+  font-size: 16px;
+  font-weight: bold;
+  display: inline;
+  padding-right: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: rgb(2, 2, 45);
+}
+.ab {
+  font-size: 16px;
+  font-weight: bold;
+  display: inline;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: rgb(2, 2, 45);
+  padding-right: 20px;
+}
+
+.ac {
+  font-size: 16px;
+  font-weight: bold;
+  display: inline;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: rgb(2, 45, 38);
+}
+
+#excel-file,
+#container1,
+#container2 {
+  display: inline;
+  padding-right: 10px;
+  font-size: 14px;
+}
+
+#mesin,
+#month {
+  color: rgb(18, 2, 47);
+  display: inline;
+  padding-right: 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#container {
+  padding: 20px;
+  height: 1200px;
+  background-color: #e9ecef;
+  margin-top: 10px; /* Sesuaikan ini dengan tinggi #top-head */
+  position: relative;
+  z-index: 1;
+}
+#products-list {
+  flex: 2;
+  padding-right: 0%;
+}
+#products-graph {
+  flex: content;
+  padding-left: 0%;
+}
+.column {
+  float: left;
+  width: 50%;
+}
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}

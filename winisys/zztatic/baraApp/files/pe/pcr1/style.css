@@ -1,0 +1,136 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgb(243, 169, 32);
+  font-family: "Poppins", sans-serif;
+}
+
+.container {
+	background-color: #666;
+	padding: 40rem;
+	margin-top: 1rem;
+	min-width: 200px;
+	padding: 15px;
+	transition: 0.3s;
+	font-family: sans-serif;
+	border: 2px solid #333;
+	border-radius: 10px;
+}
+
+.container h1 {
+	font-size: 1.5rem;
+	text-align: center;
+	color: red;
+	background-color: #FF0;
+}
+
+.draggable {
+  padding: 1rem;
+  background-color: white;
+  border: 1px solid black;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  box-shadow: 8px 8px 8px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+}
+
+.draggable button {
+  border: none;
+  outline: none;
+  background-color: rgb(214, 48, 48);
+  color: white;
+  padding: 10px;
+  width: 10px;
+  height: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.2s;
+}
+
+.draggable button:hover {
+  background-color: rgb(190, 41, 41);
+  transform: scale(1.1);
+}
+
+.dragging {
+  opacity: 0.5;
+}
+
+.container-main {
+  display: flex;
+  justify-content: space-around;
+}
+
+.over {
+  border: 2px solid white;
+}
+
+header {
+  margin: 10px;
+}
+
+header h1 {
+  text-align: center;
+  color: white;
+  font-size: 2rem;
+}
+
+#form-container {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+}
+
+form {
+  display: flex;
+}
+
+form input {
+	background-color: whitesmoke;
+	color: #333;
+	width: 700px;
+	height: 50px;
+	padding: 10px;
+	font-size: 1.1rem;
+	border: none;
+	outline: none;
+}
+
+form button {
+  border: none;
+  width: 80px;
+  height: 53px;
+  outline: none;
+  margin-left: 20px;
+  font-size: 3rem;
+  background-color: rgb(248, 5, 126);
+  color: yellow;
+  transition: 0.3s;
+}
+
+form button:hover {
+  color: #333;
+  background-color: white;
+}
+
+.remove {
+  animation: remove 0.5s ease forwards;
+}
+
+@keyframes remove {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: rotate(10deg) scale(0.5);
+  }
+}

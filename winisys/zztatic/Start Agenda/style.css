@@ -1,0 +1,163 @@
+:root {
+  --light-blue: #24030b;
+  --bg: #1c0233f6;
+  --shadow: 0 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+body {
+  font-size: 10px;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  /* background-color: black; */
+}
+
+#hero {
+  background-image: url(./The\ Night\ Sky.jpg);
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.hero {
+  min-height: 100vh;
+  position: relative;
+  /* background-color: var(--bg); */
+  /* display: flex; */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
+  z-index: 1;
+}
+
+/* .hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(img/The\ Night\ Sky.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;
+  opacity: 0.6;
+} */
+
+.hero h1,
+.hero h4,
+.hero p {
+  text-shadow: var(--shadow);
+  position: relative;
+  z-index: 2;
+  color: white;
+}
+
+.hero h1 {
+  font-family: "Calibri";
+  font-size: 5rem;
+  padding-bottom: 0.5rem;
+}
+
+.hero h4 {
+  font-size: 3.2rem;
+}
+
+.hero p {
+  font-size: 2.4rem;
+}
+
+.hero a {
+  color: black;
+  background-color: rgb(255, 255, 255);
+  z-index: 2;
+  position: relative;
+}
+
+.hero a:hover {
+  background-color: var(--light-blue);
+  color: rgb(255, 0, 0);
+}
+
+/* Countdown Timer */
+.countdown {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+  font-size: 2.5rem;
+  color: darkviolet;
+  font-weight: bolder;
+}
+
+.countdown .time {
+  background: rgba(39, 2, 243, 0.7);
+  padding: 15px 25px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  z-index: 2;
+}
+
+.countdown h2 {
+  font-size: 3rem;
+  margin: 0;
+  color: white;
+}
+
+.countdown small {
+  display: block;
+  font-size: 1rem;
+  color: white;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  /* left: 0;
+  top: 10 cm; */
+  width: 20%;
+  height: 35%;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding-top: 60px;
+}
+
+.modal-content {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: antiquewhite;
+  font-size: 2.5rem;
+}
+.x {
+  font-size: 2rem;
+}
+
+.close {
+  color: red;
+  float: right;
+  font-size: 27px;
+  font-weight: bold;
+}
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+.marquee-content {
+  display: block;
+  overflow: hidden;
+  animation: scrolling 18s linear infinite;
+  font-size: 5rem;
+
+  font-family: "Calibri";
+}
+@keyframes scrolling {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translatex(-100%);
+  }
+}

@@ -1,0 +1,219 @@
+[
+    {
+        "Date": 1,
+        "Plann": 0,
+        "Actual": 0,
+        "PlannD": 0,
+        "ActualD": 0
+    },
+    {
+        "Date": 2,
+        "Plann": 2744.01,
+        "Actual": 2374.30,
+        "PlannD": 2744.01,
+        "ActualD": 2374.30
+    },
+    {
+        "Date": 3,
+        "Plann": 12495.50,
+        "Actual": 2374.30,
+        "PlannD": 9751.49,
+        "ActualD": 0
+    },
+    {
+        "Date": 4,
+        "Plann": 25534.71,
+        "Actual": 2374.30,
+        "PlannD": 13039.21,
+        "ActualD": 0
+    },
+    {
+        "Date": 5,
+        "Plann": 38573.93,
+        "Actual": 31324.70,
+        "PlannD": 13039.21,
+        "ActualD": 28950.40
+    },
+    {
+        "Date": 6,
+        "Plann": 56573.57,
+        "Actual": 41699.90,
+        "PlannD": 17999.64,
+        "ActualD": 10375.20
+    },
+    {
+        "Date": 7,
+        "Plann": 84896.06,
+        "Actual": 60909.50,
+        "PlannD": 28322.50,
+        "ActualD": 19209.60
+    },
+    {
+        "Date": 8,
+        "Plann": 114652.48,
+        "Actual": 93394.30,
+        "PlannD": 29756.42,
+        "ActualD": 32484.80
+    },
+    {
+        "Date": 9,
+        "Plann": 147761.30,
+        "Actual": 119805.50,
+        "PlannD": 33108.82,
+        "ActualD": 26411.20
+    },
+    {
+        "Date": 10,
+        "Plann": 181398.28,
+        "Actual": 119805.50,
+        "PlannD": 33636.98,
+        "ActualD": 0
+    },
+    {
+        "Date": 11,
+        "Plann": 215116.00,
+        "Actual": 119805.50,
+        "PlannD": 33717.72,
+        "ActualD": 0
+    },
+    {
+        "Date": 12,
+        "Plann": 248833.72,
+        "Actual": 154556.70,
+        "PlannD": 33717.72,
+        "ActualD": 34751.20
+    },
+    {
+        "Date": 13,
+        "Plann": 282471.19,
+        "Actual": 215850.50,
+        "PlannD": 33637.47,
+        "ActualD": 61293.80
+    },
+    {
+        "Date": 14,
+        "Plann": 319078.97,
+        "Actual": 250498.00,
+        "PlannD": 36607.78,
+        "ActualD": 34647.50
+    },
+    {
+        "Date": 15,
+        "Plann": 355172.26,
+        "Actual": 291761.70,
+        "PlannD": 36093.28,
+        "ActualD": 41263.70
+    },
+    {
+        "Date": 16,
+        "Plann": 390667.26,
+        "Actual": 342171.10,
+        "PlannD": 35495.00,
+        "ActualD": 50409.40
+    },
+    {
+        "Date": 17,
+        "Plann": 427129.57,
+        "Actual": 342171.10,
+        "PlannD": 36462.31,
+        "ActualD": 0
+    },
+    {
+        "Date": 18,
+        "Plann": 463424.27,
+        "Actual": 342171.10,
+        "PlannD": 36294.70,
+        "ActualD": 0
+    },
+    {
+        "Date": 19,
+        "Plann": 500136.07,
+        "Actual": 409079.20,
+        "PlannD": 36711.80,
+        "ActualD": 66908.10
+    },
+    {
+        "Date": 20,
+        "Plann": 534971.50,
+        "Actual": 475777.50,
+        "PlannD": 34835.43,
+        "ActualD": 66698.30
+    },
+    {
+        "Date": 21,
+        "Plann": 568287.72,
+        "Actual": 539424.30,
+        "PlannD": 33316.22,
+        "ActualD": 63646.80
+    },
+    {
+        "Date": 22,
+        "Plann": 602532.00,
+        "Actual": 571712.40,
+        "PlannD": 34244.28,
+        "ActualD": 32288.10
+    },
+    {
+        "Date": 23,
+        "Plann": 636623.07,
+        "Actual": 606401.80,
+        "PlannD": 34091.06,
+        "ActualD": 34689.40
+    },
+    {
+        "Date": 24,
+        "Plann": 670358.67,
+        "Actual": 606401.80,
+        "PlannD": 33735.60,
+        "ActualD": 0
+    },
+    {
+        "Date": 25,
+        "Plann": 704094.27,
+        "Actual": 606401.80,
+        "PlannD": 33735.60,
+        "ActualD": 0
+    },
+    {
+        "Date": 26,
+        "Plann": 732291.65,
+        "Actual": 673760.70,
+        "PlannD": 28197.38,
+        "ActualD": 67358.90
+    },
+    {
+        "Date": 27,
+        "Plann": 756123.30,
+        "Actual": 739310.00,
+        "PlannD": 23831.66,
+        "ActualD": 65549.30
+    },
+    {
+        "Date": 28,
+        "Plann": 776769.01,
+        "Actual": 775250.10,
+        "PlannD": 20645.70,
+        "ActualD": 35940.10
+    },
+    {
+        "Date": 29,
+        "Plann": 786097.17,
+        "Actual": 795242.50,
+        "PlannD": 9328.17,
+        "ActualD": 19992.40
+    },
+    {
+        "Date": 30,
+        "Plann": 795425.34,
+        "Actual": 805674.50,
+        "PlannD": 9328.17,
+        "ActualD": 10432.00
+    },
+    {
+        "Date": 31,
+        "Plann": 802024.78,
+        "Actual": 805674.50,
+        "PlannD": 6599.44,
+        "ActualD": 0
+    }
+]

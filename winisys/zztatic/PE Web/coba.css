@@ -1,0 +1,18 @@
+h1 {
+  color: blue;
+  font-family: Calibri;
+  font-size: 30px;
+}
+pre {
+  color: rgb(10, 10, 10);
+  font-family: courier;
+  font-size: 100%;
+  line-height: 100%;
+  padding: 10px;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+}

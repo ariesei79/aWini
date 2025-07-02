@@ -1,0 +1,24 @@
+.Header {
+	font-size: 10px;
+	font-style: normal;
+	color: #FF0000;
+	font-weight: bold;
+}
+.ATAS {
+	font-size: 24px;
+	color: #FF0;
+	text-align: center;
+}
+.style3 {
+	font-size: 24px;
+}
+.style3 {
+	color: #FF0;
+}
+.style3 table tr th #ticker ul .style3 {
+	font-size: 20px;
+	color: #FFF;
+}
+.style3 table tr th #ticker .title {
+	color: #FFF;
+}

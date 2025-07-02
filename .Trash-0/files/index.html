@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 5px 0;
+        }
+        a {
+            text-decoration: none;
+            color: blue;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Files in "list" Folder</h1>
+    <ul id="file-list"></ul>
+
+    <script>
+        async function fetchFiles() {
+            try {
+                const response = await fetch('/files');
+                const files = await response.json();
+                const fileList = document.getElementById('file-list');
+                fileList.innerHTML = ''; // Clear previous list
+
+                // Create list items for each file
+                files.forEach(file => {
+                    const listItem = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.textContent = file;
+
+                    // Set link to open the file directly if it's an HTML file
+                    link.href = `list/${file}`; // Adjust path if needed
+                    link.target = '_blank'; // Open in new tab
+
+                    listItem.appendChild(link);
+                    fileList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Error fetching files:', error);
+            }
+        }
+
+        // Fetch files when the page loads
+        window.onload = fetchFiles;
+    </script>
+</body>
+</html>

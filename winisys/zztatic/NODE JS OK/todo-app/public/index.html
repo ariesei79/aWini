@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link href="todo.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <section class="section-1">
+    <input type="text" id="task" size="70" height="100" placeholder="Add a new task">
+    <button onclick="addTask()" class="add-input"><img src="faplus.png" width="35" height="30"></i></button>
+    </section>
+
+    <section class="Section-2">
+     <ul id="todo-list"></ul>
+
+    <script>
+        let editingId = null;
+
+        async function fetchTodos() {
+            const response = await fetch('/todos');
+            const todos = await response.json();
+            const todoList = document.getElementById('todo-list');
+            todoList.innerHTML = '';
+            todos.forEach(todo => {
+                todoList.innerHTML += `
+                    <li>
+                        <span>${todo.task}</span>
+                        <button onclick="editTask(${todo.id}, '${todo.task}')"><img src="edit.png" width="20" height="20"></button></button>
+                        <button onclick="deleteTask(${todo.id})"><img src="delete.png" width="20" height="20"></button>
+                    </li>`;
+            });
+        }
+
+        async function addTask() {
+            const taskInput = document.getElementById('task');
+            const task = taskInput.value;
+
+            if (editingId) {
+                await fetch(`/todos/${editingId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ task })
+                });
+                editingId = null; // Reset editing ID
+            } else {
+                await fetch('/todos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ task })
+                });
+            }
+            taskInput.value = '';
+            fetchTodos();
+        }
+
+        function editTask(id, task) {
+            const taskInput = document.getElementById('task');
+            taskInput.value = task;
+            editingId = id; // Set editing ID
+        }
+
+        async function deleteTask(id) {
+            await fetch(`/todos/${id}`, {
+                method: 'DELETE'
+            });
+            fetchTodos();
+        }
+
+        fetchTodos();
+      </script>
+      </section>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Daily Checklist Barcode</title>
+<link rel="icon" type="image/png" href="icon/sumitomo.png" />
+<script src="https://unpkg.com/html5-qrcode"></script>
+<link rel="stylesheet" href="style.css" />
+<style>
+    /* Tambahkan styling untuk modal konfirmasi */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 10; /* <-- TINGKATKAN Z-INDEX MODAL */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto; /* 15% from the top and centered */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%; /* Could be more or less, depending on screen size */
+      max-width: 500px; /* Max width for larger screens */
+      border-radius: 8px;
+      text-align: center; /* Center modal content */
+      /* z-index modal-content tidak perlu diubah, ia sudah di dalam modal */
+    }
+
+    .modal-content h2 {
+        margin-top: 0;
+    }
+
+    .modal-content button {
+        margin: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+    }
+
+    .modal-content button:hover {
+        opacity: 0.9;
+    }
+
+    .modal-content button.delete-button {
+        background-color: #f44336; /* Red */
+        color: white;
+    }
+
+     .modal-content button.cancel-button {
+        background-color: #ccc; /* Grey */
+        color: black;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Styling untuk tabel */
+     .data-table th, .data-table td {
+         padding: 8px;
+         border: 1px solid #ddd;
+         text-align: left;
+     }
+
+     .data-table th {
+         background-color: #f2f2f2;
+         position: sticky; /* Header tetap di atas saat scroll */
+         top: 0;
+         z-index: 1; /* Pastikan header di atas konten tabel. Nilai ini LEBIH RENDAH dari modal. */
+     }
+
+     .data-table tbody tr:nth-child(even) {
+         background-color: #f9f9f9;
+     }
+
+     .data-table tbody tr:hover {
+         background-color: #e9e9e9;
+     }
+
+     /* Styling untuk container tabel agar bisa discroll */
+     .table-container {
+         max-height: 400px; /* Sesuaikan tinggi sesuai kebutuhan */
+         overflow-y: auto; /* Aktifkan scrolling vertikal */
+         margin-top: 10px;
+         border: 1px solid #ddd; /* Border opsional */
+     }
+
+     /* Styling untuk tombol hapus */
+     #delete-data-btn { /* Menggunakan ID yang sama */
+         background-color: #f44336;
+         color: white;
+         padding: 10px 20px;
+         border: none;
+         border-radius: 4px;
+         cursor: pointer;
+         margin-top: 10px;
+     }
+
+     #delete-data-btn:hover {
+         opacity: 0.9;
+     }
+
+     #delete-data-btn:disabled {
+         background-color: #cccccc;
+         cursor: not-allowed;
+     }
+
+     /* Styling untuk menyembunyikan checkbox secara default */
+     .delete-checkbox-cell, .select-all-checkbox-cell {
+         display: none;
+     }
+
+     /* Styling untuk menampilkan checkbox saat mode hapus aktif */
+     .delete-mode .delete-checkbox-cell,
+     .delete-mode .select-all-checkbox-cell {
+         display: table-cell; /* Atau 'block' atau 'flex' tergantung layout */
+     }
+     /* Pastikan header checkbox juga muncul */
+     .delete-mode th:first-child {
+         display: table-cell;
+     }
+
+
+</style>
+</head>
+<body>
+
+<div class="header-container">
+    <div class="header-content">
+        <img src="icon/sumitomo.png" alt="Sumitomo Logo" class="header-logo" />
+        <div class="header-text">
+            <div class="header-top">PT.Sumitomo Electric Wintec Indonesia</div>
+            <div class="header-bottom">Quality Database System</div>
+        </div>
+    </div>
+</div>
+
+<div id="datetime"></div>
+
+<div class="container">
+    <h1>Daily Checklist Barcode</h1>
+
+    <div class="folder-container">
+        <label for="folderInput">Lokasi Penyimpanan:</label>
+        <span id="folderPath" style="font-weight: bold;">Data akan disimpan ke database server</span>
+    </div>
+
+    <!-- Checklist Area -->
+    <div style="margin-top: 10px;">
+        <button id="checklist-area-btn" onclick="openAreaModal()">Pilih Checklist Area</button>
+        <span id="selected-area" style="margin-left:10px; font-weight: bold;">Belum ada area yang dipilih</span>
+    </div>
+
+    <!-- Checklist Shift -->
+    <div style="margin-top: 10px;">
+        <button id="checklist-shift-btn" onclick="openShiftModal()">Pilih Checklist Shift</button>
+        <span id="selected-shift" style="margin-left:10px; font-weight: bold;">Belum ada shift yang dipilih</span>
+    </div>
+
+    <!-- Scanner Barcode -->
+    <div id="reader" style="width:100%; margin-top:20px; display:none;"></div>
+    <div id="scan-result" style="margin-top: 10px; text-align: center; font-weight: bold; color: green;"></div>
+
+    <!-- Modal Checklist Area -->
+    <div id="checklistAreaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAreaModal()">×</span>
+            <h2>Pilih Checklist Area</h2>
+            <div id="area-checklist">
+                <label><input type="radio" name="area" value="bw supply"> BW Supply</label><br>
+                <label><input type="radio" name="area" value="final dies felt"> Final Dies Felt</label><br>
+                <label><input type="radio" name="area" value="inline air wipper"> Inline Air Wipper</label><br>
+                <label><input type="radio" name="area" value="felt back oven"> Felt Back Oven</label><br>
+                <!-- Tambahkan area lain jika perlu -->
+            </div>
+            <button onclick="confirmArea()">OK</button>
+            <button onclick="closeAreaModal()">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Modal Checklist Shift -->
+    <div id="checklistShiftModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeShiftModal()">×</span>
+            <h2>Pilih Checklist Shift</h2>
+            <div id="shift-checklist">
+                <label><input type="radio" name="shift" value="Shift 1"> Shift 1</label><br>
+                <label><input type="radio" name="shift" value="Shift 2"> Shift 2</label><br>
+                <!-- Tambahkan shift lain jika perlu -->
+            </div>
+            <button onclick="confirmShift()">OK</button>
+            <button onclick="closeShiftModal()">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Modal Sukses Scan -->
+    <div id="successfulScanModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSuccessScanModal()">×</span>
+            <h2>Scan Berhasil!</h2>
+            <p id="success-message">Barcode <span id="scanned-barcode-text"></span> cocok dengan Area <span id="selected-area-text"></span>.</p>
+            <button onclick="saveScannedData()">Simpan Data Ini</button>
+            <button onclick="closeSuccessfulScanModalAndRestartScan()">Tutup & Lanjut Scan</button>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDeleteConfirmModal()">×</span>
+            <h2>Konfirmasi Hapus Data</h2>
+            <p>Yakin akan menghapus data yang terpilih?</p>
+            <button class="cancel-button" onclick="closeDeleteConfirmModal()">Cancel</button>
+            <button class="delete-button" onclick="deleteSelectedData()">Delete</button>
+        </div>
+    </div>
+
+
+    <!-- Area untuk menampilkan data dari Database -->
+    <div style="margin-top: 30px;">
+        <h2>Data Tersimpan di Database:</h2>
+        <button onclick="fetchDataFromDatabase()">Refresh Data dari Database</button>
+        <!-- Tombol Hapus Data / Hapus Data Terpilih -->
+        <button id="delete-data-btn" onclick="handleDeleteButtonClick()">Hapus Data</button>
+
+        <!-- Container untuk tabel yang bisa discroll -->
+        <div class="table-container">
+            <table id="database-data-table" class="data-table">
+                <thead>
+                    <tr>
+                        <!-- Header untuk checkbox (awalnya disembunyikan) -->
+                        <th class="select-all-checkbox-cell"><input type="checkbox" id="select-all-checkbox"></th>
+                        <th>ID</th>
+                        <th>Waktu Simpan</th>
+                        <th>Waktu Scan</th>
+                        <th>Barcode</th>
+                        <th>Area</th>
+                        <th>Shift</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data dari database akan dimasukkan di sini oleh JavaScript -->
+                </tbody>
+            </table>
+        </div> <!-- End of table-container -->
+        <p id="database-data-status" style="text-align: center; font-style: italic; color: grey;">Klik "Refresh Data dari Database" untuk menampilkan data.</p>
+    </div>
+
+</div>
+
+<footer>
+    Copyright 2025 Admin Dashboard . Process Engineering Dept.
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

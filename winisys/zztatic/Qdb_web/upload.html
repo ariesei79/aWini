@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Upload</title>
+    <!-- Anda mungkin tidak perlu lagi ikon sumitomo di sini jika sudah ada di halaman induk -->
+    <!-- <link rel="icon" type="image/png" href="icon/sumitomo.png"> -->
+    <style>
+        body {
+        /* Hapus background dari body di iframe agar transparan atau mengikuti halaman induk */
+        /* background: url('icon/bg.png') no-repeat center center fixed; */
+        /* background-size: cover; */
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px; /* Tambahkan padding agar konten tidak terlalu mepet */
+        }
+
+        /* Hapus header dari iframe karena sudah ada di halaman induk */
+        /*
+        .header-container { ... }
+        .header-content { ... }
+        .header-logo { ... }
+        .header-text { ... }
+        .header-top { ... }
+        .header-bottom { ... }
+        */
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0; /* Sesuaikan margin atas jika tidak ada header di iframe */
+            margin-bottom: 20px;
+        }
+
+        #folder-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px; /* Tambahkan margin bawah */
+            flex-wrap: wrap; /* Agar tombol dan info wrap di layar kecil */
+        }
+
+        #folder-info {
+            font-size: 14px;
+            color: red;
+            animation: blink 1s infinite;
+            min-width: 150px; /* Beri lebar minimum agar tidak terlalu pendek */
+            text-align: center; /* Pusatkan teks */
+        }
+
+        .folder-selected {
+            color: green !important;
+            animation: none;
+        }
+
+        #camera-container {
+            position: relative;
+            width: 100%; /* Gunakan 100% lebar kontainer induk */
+            /* Atur tinggi berdasarkan proporsi atau viewport, hati-hati di dalam iframe */
+            /* height: 100vh; */
+            /* Atau atur tinggi berdasarkan aspek rasio umum kamera (misal 4:3 atau 16:9) */
+            padding-top: 75%; /* Aspek rasio 4:3 (tinggi = 0.75 * lebar) */
+            overflow: hidden; /* Pastikan video/foto tidak keluar dari container */
+        }
+
+         #camera-wrapper {
+             position: absolute;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+         }
+
+
+        #video, #photo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Menjaga aspek rasio saat menutupi container */
+        }
+
+        #photo {
+            display: none;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* Efek transisi hover */
+        }
+
+        button:hover {
+            background-color: darkblue;
+        }
+
+        button:disabled {
+            background-color: grey;
+            cursor: not-allowed;
+        }
+
+        #filename {
+            width: 320px;
+            font-size: 16px;
+            padding: 8px;
+            display: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Hapus button-container jika tidak lagi digunakan */
+        /*
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        */
+
+        /* Hapus footer dari iframe karena sudah ada di halaman induk */
+        /*
+        footer { ... }
+        */
+
+         /* Responsive untuk elemen di folder-container */
+         @media (max-width: 600px) {
+             #folder-container {
+                 flex-direction: column; /* Tumpuk elemen secara vertikal */
+                 align-items: stretch; /* Rentangkan elemen agar memenuhi lebar */
+             }
+             #folder-info {
+                 min-width: auto; /* Hapus min-width */
+                 text-align: center;
+             }
+             #filename {
+                 width: 100%; /* Gunakan lebar penuh */
+                 box-sizing: border-box; /* Sertakan padding dan border dalam lebar */
+             }
+         }
+
+          /* Responsive untuk camera-container */
+          @media (max-width: 600px) {
+              #camera-container {
+                  padding-top: 100%; /* Aspek rasio 1:1 di layar sangat kecil jika diinginkan */
+              }
+          }
+
+    </style>
+</head>
+<body>
+
+    <h2>Ambil Foto & Simpan</h2>
+    <div id="folder-container">
+        <button id="selectFolder">Pilih Folder Simpan</button>
+        <button id="capture" disabled>Ambil Foto</button>
+        <input type="text" id="filename" placeholder="Masukkan nama file" />
+        <button id="save" style="display:none;">SIMPAN</button>
+        <button id="retry" style="display:none;">Ulangi</button>
+        <p id="folder-info">Folder: Belum dipilih</p>
+    </div>
+
+    <div id="camera-container">
+        <div id="camera-wrapper">
+            <video id="video" autoplay playsinline></video> <!-- Tambah playsinline untuk iOS -->
+            <img id="photo">
+        </div>
+    </div>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <!-- Hapus footer di sini -->
+    <!--
+    <footer>
+        Copyright 2025 Admin Dashboard . Process Engineering Dept.
+    </footer>
+    -->
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const photo = document.getElementById('photo');
+        const captureButton = document.getElementById('capture');
+        const saveButton = document.getElementById('save');
+        const selectFolderButton = document.getElementById('selectFolder');
+        const retryButton = document.getElementById('retry');
+        const filenameInput = document.getElementById('filename');
+        const folderInfo = document.getElementById('folder-info');
+        let stream = null;
+        let folderHandle = null;
+
+        async function startCamera() {
+            // Hentikan stream sebelumnya jika ada
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            try {
+                // Gunakan constrain lebih fleksibel atau sesuaikan dengan kebutuhan
+                const constraints = {
+                    video: {
+                        width: { ideal: 1920 }, // Resolusi ideal
+                        height: { ideal: 1080 },
+                        facingMode: "environment" // Coba gunakan kamera belakang di mobile
+                    }
+                };
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = stream;
+                 // Pastikan video dimulai
+                video.play();
+            } catch (err) {
+                console.error("Akses kamera ditolak atau gagal:", err);
+                alert("Akses kamera ditolak atau gagal. Pastikan Anda mengizinkan akses kamera.");
+                 // Nonaktifkan tombol ambil foto jika kamera gagal dimulai
+                 captureButton.disabled = true;
+            }
+        }
+
+        // Kamera tidak akan dimulai secara otomatis saat halaman dimuat di dalam iframe
+
+        captureButton.addEventListener('click', () => {
+            if (!stream) {
+                alert("Kamera belum dimulai atau akses ditolak. Pilih folder terlebih dahulu.");
+                return;
+            }
+            // Pastikan video sedang berjalan sebelum mengambil gambar
+            if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+                 alert("Kamera belum siap. Coba lagi.");
+                 return;
+            }
+
+            // Gunakan ukuran video saat ini untuk canvas
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            photo.src = canvas.toDataURL('image/jpeg', 0.9); // Kualitas gambar 0.9
+            video.style.display = "none";
+            photo.style.display = "block";
+            filenameInput.style.display = 'block';
+            saveButton.style.display = 'inline-block'; // Gunakan inline-block untuk tombol
+            retryButton.style.display = 'inline-block';
+            captureButton.style.display = 'none'; // Sembunyikan tombol ambil foto setelah diambil
+
+            // Hentikan stream kamera setelah mengambil foto (opsional, bisa juga tetap berjalan)
+            // stream.getTracks().forEach(track => track.stop());
+            // video.srcObject = null; // Kosongkan srcObject
+        });
+
+        selectFolderButton.addEventListener('click', async () => {
+            try {
+                // showDirectoryPicker() memerlukan interaksi pengguna
+                folderHandle = await window.showDirectoryPicker();
+                folderInfo.textContent = "Folder: " + folderHandle.name;
+                folderInfo.classList.add('folder-selected');
+                // Aktifkan tombol "Ambil Foto" setelah folder dipilih
+                captureButton.disabled = false;
+                // Mulai kamera setelah folder dipilih
+                startCamera();
+            } catch (err) {
+                // Tangani kesalahan jika pengguna membatalkan atau akses ditolak
+                if (err.name === 'AbortError') {
+                    alert("Pemilihan folder dibatalkan.");
+                } else {
+                    alert("Gagal memilih folder. Pastikan browser Anda mendukung fitur ini dan Anda mengizinkan akses.");
+                    console.error("Error selecting folder:", err);
+                }
+                 // Pastikan tombol "Ambil Foto" dinonaktifkan jika pemilihan folder gagal atau dibatalkan
+                 captureButton.disabled = true;
+                 // Hentikan kamera jika sudah berjalan dan pemilihan folder dibatalkan/gagal
+                 if (stream) {
+                     stream.getTracks().forEach(track => track.stop());
+                     video.srcObject = null;
+                 }
+                 folderHandle = null; // Reset folder handle
+                 folderInfo.textContent = "Folder: Belum dipilih"; // Reset info folder
+                 folderInfo.classList.remove('folder-selected');
+            }
+        });
+
+        saveButton.addEventListener('click', async () => {
+            if (!folderHandle) {
+                alert("Pilih folder terlebih dahulu.");
+                return;
+            }
+            if (!filenameInput.value) {
+                alert("Masukkan nama file.");
+                return;
+            }
+
+            const fileName = filenameInput.value.trim() + '.jpg'; // Tambah trim() untuk hapus spasi
+            if (!fileName.endsWith('.jpg')) { // Pastikan ekstensi .jpg ada
+                 // Atau tambahkan saja .jpg jika belum ada
+                 // fileName = filenameInput.value.trim() + '.jpg';
+            }
+
+            try {
+                // Meminta izin menulis ke folder jika belum diberikan
+                // const permissionStatus = await folderHandle.requestPermission({ mode: 'readwrite' });
+                // if (permissionStatus !== 'granted') {
+                //     alert("Izin menulis ke folder ditolak.");
+                //     return;
+                // }
+
+                const fileHandle = await folderHandle.getFileHandle(fileName, { create: true });
+                const writable = await fileHandle.createWritable();
+
+                // Konversi canvas ke Blob dan tulis ke file
+                canvas.toBlob(async (blob) => {
+                    if (blob) {
+                         await writable.write(blob);
+                         await writable.close();
+                         alert("Foto berhasil disimpan di: " + folderHandle.name + "/" + fileName);
+                         filenameInput.value = '';
+                         // Reset tampilan setelah menyimpan
+                         retryButton.click(); // Gunakan fungsi retry untuk mereset tampilan
+                    } else {
+                         alert("Gagal membuat data gambar.");
+                         await writable.close(); // Tutup writable meskipun gagal
+                    }
+                }, 'image/jpeg', 0.9); // Kualitas gambar 0.9 saat membuat blob
+
+            } catch (err) {
+                console.error("Gagal menyimpan file:", err);
+                // Pesan kesalahan yang lebih informatif
+                if (err.name === 'NotAllowedError') {
+                     alert("Gagal menyimpan foto: Izin menulis ke folder ditolak. Pastikan Anda memberikan izin saat diminta.");
+                } else if (err.name === 'InvalidStateError') {
+                     alert("Gagal menyimpan foto: Folder tidak valid lagi. Coba pilih folder kembali.");
+                }
+                else {
+                     alert("Gagal menyimpan foto. Error: " + err.message);
+                }
+            }
+        });
+
+        retryButton.addEventListener('click', () => {
+            photo.style.display = "none";
+            video.style.display = "block";
+            filenameInput.style.display = 'none';
+            saveButton.style.display = 'none';
+            retryButton.style.display = 'none';
+            captureButton.style.display = 'inline-block'; // Tampilkan kembali tombol ambil foto
+
+             // Mulai kembali kamera saat mengulang
+             if (folderHandle) { // Hanya mulai jika folder sudah dipilih
+                 startCamera();
+             } else {
+                 // Jika folder belum dipilih, pastikan kamera tidak berjalan
+                  if (stream) {
+                     stream.getTracks().forEach(track => track.stop());
+                     video.srcObject = null;
+                     stream = null;
+                 }
+             }
+        });
+
+        // Nonaktifkan tombol "Ambil Foto" secara default saat halaman dimuat
+        captureButton.disabled = true;
+
+         // Optional: Hentikan kamera saat iframe ditutup atau halaman induk di-unload
+         window.addEventListener('unload', () => {
+             if (stream) {
+                 stream.getTracks().forEach(track => track.stop());
+             }
+         });
+
+    </script>
+</body>
+</html>

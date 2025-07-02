@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sumitomo Electric Wintec Indonesia Quality Database System</title>
+    <link rel="icon" type="image/png" href="icon/sumitomo.png">
+    <style>
+        body {
+        background: url('icon/bg.png') no-repeat center center fixed;
+        background-size: cover;
+        font-family: Arial, sans-serif;
+        margin: 0; /* Hapus margin dari body */
+        }
+
+        .header-container {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            padding: 10px 0; /* Padding untuk header */
+            background: linear-gradient(to right, #ff0000, #ffffff); /* Warna merah dan putih */
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center; /* Memusatkan elemen secara vertikal */
+            justify-content: flex-start; /* Mengatur elemen ke kiri */
+            padding: 10px; /* Menambahkan padding untuk header */
+        }
+
+        .header-logo {
+            width: 90px; /* Lebar logo */
+            height: auto; /* Menjaga proporsi gambar */
+            margin-right: 10px; /* Spacing di sebelah kanan logo */
+        }
+
+        .header-text {
+            color: black; /* Warna teks */
+        }
+
+        .header-top {
+            font-size: 30px; /* Ukuran font judul perusahaan */
+            font-weight: bold;
+        }
+
+        .header-bottom {
+            font-size: 25px; /* Ukuran font untuk sistem database */
+            font-weight: bold;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        #folder-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        #folder-info {
+            font-size: 14px;
+            color: red;
+            animation: blink 1s infinite;
+        }
+
+        .folder-selected {
+            color: green !important;
+            animation: none;
+        }
+
+        #camera-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #video, #photo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #photo {
+            display: none;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: darkblue;
+        }
+
+        #filename {
+            width: 320px;
+            font-size: 16px;
+            padding: 8px;
+            display: none;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #333;
+            color: white;
+            font-size: 18px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 60px; /* Jarak dari header ke judul */
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="header-content">
+            <img src="icon/sumitomo.png" alt="Sumitomo Logo" class="header-logo">
+            <div class="header-text">
+                <div class="header-top">PT.Sumitomo Electric Wintec Indonesia</div>
+                <div class="header-bottom">Quality Database System</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Ambil Foto & Simpan</h2>
+    <div id="folder-container">
+        <button id="selectFolder">Pilih Folder Simpan</button>
+        <button id="capture">Ambil Foto</button>
+        <input type="text" id="filename" placeholder="Masukkan nama file" />
+        <button id="save" style="display:none;">SIMPAN</button>
+        <button id="retry" style="display:none;">Ulangi</button>
+        <p id="folder-info">Folder: Belum dipilih</p>
+    </div>
+
+    <div id="camera-container">
+        <video id="video" autoplay></video>
+        <img id="photo">
+    </div>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <footer>
+        Copyright 2025 Admin Dashboard . Process Engineering Dept.
+    </footer>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const photo = document.getElementById('photo');
+        const captureButton = document.getElementById('capture');
+        const saveButton = document.getElementById('save');
+        const selectFolderButton = document.getElementById('selectFolder');
+        const retryButton = document.getElementById('retry');
+        const filenameInput = document.getElementById('filename');
+        const folderInfo = document.getElementById('folder-info');
+        let stream = null;
+        let folderHandle = null;
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { width: window.innerWidth, height: window.innerHeight } });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error("Akses kamera ditolak", err);
+            }
+        }
+
+        captureButton.addEventListener('click', () => {
+            canvas.width = 2040;
+            canvas.height = 1530;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            photo.src = canvas.toDataURL('image/jpeg');
+            video.style.display = "none";
+            photo.style.display = "block";
+            filenameInput.style.display = 'block';
+            saveButton.style.display = 'block';
+            retryButton.style.display = 'block';
+        });
+
+        selectFolderButton.addEventListener('click', async () => {
+            try {
+                folderHandle = await window.showDirectoryPicker();
+                folderInfo.textContent = "Folder: " + folderHandle.name;
+                folderInfo.classList.add('folder-selected');
+            } catch (err) {
+                alert("Pilih folder gagal atau dibatalkan.");
+                console.error(err);
+            }
+        });
+
+        saveButton.addEventListener('click', async () => {
+            if (!folderHandle) return alert("Pilih folder terlebih dahulu.");
+            if (!filenameInput.value) return alert("Masukkan nama file.");
+
+            const fileName = filenameInput.value + '.jpg';
+            const fileHandle = await folderHandle.getFileHandle(fileName, { create: true });
+            const writable = await fileHandle.createWritable();
+
+            canvas.toBlob(async (blob) => {
+                await writable.write(blob);
+                await writable.close();
+                alert("Foto berhasil disimpan.");
+                filenameInput.value = '';
+            }, 'image/jpeg');
+        });
+
+        retryButton.addEventListener('click', () => {
+            photo.style.display = "none";
+            video.style.display = "block";
+            filenameInput.style.display = 'none';
+            saveButton.style.display = 'none';
+            retryButton.style.display = 'none';
+        });
+
+        startCamera();
+    </script>
+</body>
+</html>

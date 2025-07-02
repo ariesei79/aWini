@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart.js Example</title>
+    <script src="script.js"></script>
+    <style>
+        canvas {
+            display: block;
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myChart"></canvas>
+    <canvas id="myChartD"></canvas>
+
+    <script>
+        async function loadData() {
+            const response = await fetch('data.json');
+            const data = await response.json();
+
+            const labels = data.map(entry => entry.Date);
+            const plannData = data.map(entry => entry.Plann);
+            const actualData = data.map(entry => entry.Actual !== null ? entry.Actual : null);
+            const plannDataD = data.map(entry => entry.PlannD);
+            const actualDataD = data.map(entry => entry.ActualD !== null ? entry.ActualD : null);
+
+            // Membuat grafik menggunakan Chart.js
+            Chart.defaults.font.size = 18;
+            
+            const ctx = document.getElementById('myChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Plann',
+                            data: plannData,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Actual',
+                            data: actualData,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.dataset.label + ': ' + (tooltipItem.raw !== null ? tooltipItem.raw.toFixed(2) : 'N/A');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Kg'
+                            },
+                            suggestedMin: 0
+                        }
+                    }
+                }
+            });
+
+            const ctxd = document.getElementById('myChartD').getContext('2d');
+            new Chart(ctxd, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'PlannD',
+                            data: plannDataD,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'ActualD',
+                            data: actualDataD,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.dataset.label + ': ' + (tooltipItem.raw !== null ? tooltipItem.raw.toFixed(2) : 'N/A');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Kg'
+                            },
+                            suggestedMin: 0
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadData();
+        });
+    </script>
+</body>
+</html>

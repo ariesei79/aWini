@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambil Foto & Simpan</title>
+    <style>
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        #folder-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        #folder-info {
+            font-size: 14px;
+            color: red;
+            animation: blink 1s infinite;
+        }
+        .folder-selected {
+            color: green !important;
+            animation: none;
+        }
+        #camera-container {
+            position: relative;
+            width: 320px;
+            height: 240px;
+        }
+        #video, #photo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #photo {
+            display: none;
+        }
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkblue;
+        }
+        #filename {
+            width: 320px;
+            font-size: 16px;
+            padding: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Ambil Foto & Simpan</h2>
+    <div id="folder-container">
+        <button id="selectFolder">Pilih Folder Simpan</button>
+        <p id="folder-info">Folder: Belum dipilih</p>
+    </div>
+    <div id="camera-container">
+        <video id="video" width="320" height="240" autoplay></video>
+        <img id="photo" width="320" height="240">
+    </div>
+    <button id="capture">Ambil Foto</button>
+    <canvas id="canvas" width="2040" height="1530" style="display:none;"></canvas>
+    <input type="text" id="filename" placeholder="Masukkan nama file" style="display: none;" />
+    <div class="button-container" style="display: none;">
+        <button id="save">SIMPAN</button>
+        <button id="retry" style="display:none;">Ulangi</button>
+    </div>
+    
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const photo = document.getElementById('photo');
+        const captureButton = document.getElementById('capture');
+        const saveButton = document.getElementById('save');
+        const selectFolderButton = document.getElementById('selectFolder');
+        const retryButton = document.getElementById('retry');
+        const filenameInput = document.getElementById('filename');
+        const folderInfo = document.getElementById('folder-info');
+        const buttonContainer = document.querySelector('.button-container');
+        let stream = null;
+        let folderHandle = null;
+
+        // Fungsi untuk menampilkan input dan tombol simpan setelah mengambil foto
+        function showInputAndButtons() {
+            filenameInput.style.display = 'block';
+            buttonContainer.style.display = 'flex';
+        }
+
+        // Fungsi untuk menyembunyikan input dan tombol simpan
+        function hideInputAndButtons() {
+            filenameInput.style.display = 'none';
+            buttonContainer.style.display = 'none';
+        }
+
+        // Fungsi untuk mengaktifkan kamera
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.style.display = "block";
+                photo.style.display = "none";
+                captureButton.style.display = "block";
+                retryButton.style.display = "none";
+                hideInputAndButtons();
+            } catch (err) {
+                console.error("Akses kamera ditolak", err);
+            }
+        }
+
+        // Fungsi untuk mematikan kamera
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                video.style.display = "none";
+                photo.style.display = "block";
+                captureButton.style.display = "none";
+                retryButton.style.display = "block";
+                showInputAndButtons();
+            }
+        }
+
+        // Ambil foto
+        captureButton.addEventListener('click', () => {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            photo.src = canvas.toDataURL('image/png');
+            stopCamera();
+        });
+
+        // Ulangi pengambilan foto
+        retryButton.addEventListener('click', () => {
+            startCamera();
+        });
+
+        // Pilih folder penyimpanan
+        selectFolderButton.addEventListener('click', async () => {
+            try {
+                folderHandle = await window.showDirectoryPicker();
+                folderInfo.textContent = "Folder: " + folderHandle.name;
+                folderInfo.classList.remove('blink');
+                folderInfo.classList.add('folder-selected');
+                alert("Folder penyimpanan telah dipilih!");
+            } catch (err) {
+                console.error("Gagal memilih folder", err);
+                alert("Pemilihan folder gagal. Pastikan browser mendukung fitur ini.");
+            }
+        });
+
+        // Simpan ke folder yang dipilih dengan nama file custom
+        saveButton.addEventListener('click', async () => {
+            if (!folderHandle) {
+                alert("Silakan pilih folder penyimpanan terlebih dahulu!");
+                return;
+            }
+            try {
+                let fileName = filenameInput.value.trim();
+                if (!fileName) {
+                    fileName = `photo_${new Date().toISOString().replace(/[:.-]/g, "_")}`;
+                }
+                fileName += ".png";
+                
+                const fileHandle = await folderHandle.getFileHandle(fileName, { create: true });
+                const writable = await fileHandle.createWritable();
+                
+                // Simpan gambar
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                await writable.write(blob);
+                await writable.close();
+                alert("Gambar berhasil disimpan ke folder yang dipilih!");
+            } catch (err) {
+                console.error("Gagal menyimpan file", err);
+                alert("Penyimpanan gagal. Pastikan browser mendukung fitur ini.");
+            }
+        });
+
+        // Mulai kamera saat halaman dimuat
+        startCamera();
+    </script>
+</body>
+</html>

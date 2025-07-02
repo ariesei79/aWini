@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Photo Capture</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #007BFF;
+        }
+        #camera-container {
+            margin: 20px auto;
+            position: relative;
+            width: 400px;
+            height: 300px;
+        }
+        video, canvas {
+            width: 100%;
+            height: 100%;
+            border: 2px solid #007BFF;
+            border-radius: 10px;
+        }
+        #capture-btn, #upload-btn {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #capture-btn:hover, #upload-btn:hover {
+            background-color: #0056b3;
+        }
+        #filename, #file-extension {
+            margin: 10px 0;
+            padding: 10px;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #file-extension {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Webcam Photo Capture</h1>
+    <div id="camera-container">
+        <video id="video" autoplay></video>
+        <canvas id="canvas" style="display: none;"></canvas>
+    </div>
+    <input type="text" id="filename" placeholder="Enter file name (optional)">
+    <br>
+    <select id="file-extension">
+        <option value="png">.png</option>
+        <option value="jpg">.jpg</option>
+        <option value="jpeg">.jpeg</option>
+    </select>
+    <br>
+    <button id="capture-btn">Capture Photo</button>
+    <button id="upload-btn" style="display: none;">Upload Photo</button>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('capture-btn');
+        const uploadBtn = document.getElementById('upload-btn');
+        const filenameInput = document.getElementById('filename');
+        const fileExtensionSelect = document.getElementById('file-extension');
+        const context = canvas.getContext('2d');
+
+        // Akses webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                video.srcObject = stream;
+            })
+            .catch((err) => {
+                console.error('Error accessing webcam:', err);
+            });
+
+        // Tangkap gambar dari video
+        captureBtn.addEventListener('click', () => {
+            canvas.style.display = 'block';
+            video.style.display = 'none';
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            uploadBtn.style.display = 'inline-block';
+        });
+
+        // Unggah gambar ke server
+        uploadBtn.addEventListener('click', () => {
+            const fileName = filenameInput.value.trim() || `capture_${Date.now()}`; // Nama file default jika kosong
+            const fileExtension = fileExtensionSelect.value; // Ambil ekstensi file yang dipilih
+            const fullFileName = `${fileName}.${fileExtension}`; // Gabungkan nama file dengan ekstensi
+
+            canvas.toBlob((blob) => {
+                const formData = new FormData();
+                formData.append('file', blob, fullFileName);
+
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then((response) => {
+                    if (response.ok) {
+                        alert('Photo uploaded successfully!');
+                        window.location.reload(); // Reload halaman setelah upload sukses
+                    } else {
+                        alert('Error uploading photo!');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error uploading photo:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

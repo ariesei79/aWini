@@ -1,0 +1,94 @@
+html,
+body {
+  background-image: url(bakground.png);
+  background-repeat: no-repeat;
+  background-size: 101%;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+}
+
+.container02 > li a :hover {
+  color: rgb(0, 0, 0);
+}
+
+.container02 > li a {
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-align: left;
+}
+
+.icon {
+  background-color: aliceblue;
+  margin: 0px;
+  float: left;
+  padding: 0px;
+}
+
+.header {
+  background-color: rgb(20, 19, 19);
+  font-weight: bold;
+
+  font-family: Calibri;
+  text-align: center;
+}
+.list-header {
+  list-style-type: none;
+  display: inline-flex;
+  padding-top: 5px;
+  padding-bottom: 20px;
+  margin: 0;
+  /* font-size: 1.5rem; */
+}
+
+.list-header > li a {
+  color: rgb(0, 229, 255);
+  list-style-type: none;
+  text-decoration: none;
+  font-size: 1.8rem;
+}
+
+.list-header :hover {
+  background-color: rgb(98, 0, 255);
+  padding: 0;
+  margin: 0;
+  text-align: justify;
+}
+
+.date {
+  background-color: rgb(20, 19, 19);
+  color: rgb(0, 217, 255);
+  text-align: center;
+  font-weight: bold;
+  padding: 0;
+  margin: 0;
+}
+
+.judul {
+  color: rgb(255, 0, 0);
+  text-align: center;
+  font-weight: bold;
+  font-family: Terminal;
+  font-size: 4.5rem;
+  margin: 0;
+}
+
+.attachment > li a {
+  color: rgb(143, 143, 143);
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  font-family: Calibri;
+}
+
+.attachment > li :hover {
+  background-color: rgb(128, 128, 128);
+}
+
+.container03 > li,
+.container02 > li {
+  font-size: 2rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}

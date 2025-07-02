@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DRAWING</title>
+    <script src="cdn-master/xlsx.full.min.js"></script>
+    <script src="cdn-master/plotly-latest.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <!-- <nav>
+            <a href="index.html">Kembali ke Halaman Utama</a>
+            <a href="data.html">Ke Halaman 2</a>
+        </nav> -->
+    <div id="top-head">
+      <nav class="navigasi">
+        <a class="aa" href="index.html">Ke Halaman Utama</a>
+        <a class="ab" style="color: blueviolet">DRAWING</a>
+        <a class="ab" href="data.html">VERTICAL</a>
+        <a class="ab" href="data.html">HORIZONTAL</a>
+      </nav>
+      <h1 id="title">Daily Check Drawing Section</h1>
+      <input type="file" id="excel-file" accept=".xlsx" />
+      <div id="container1"></div>
+      <div id="container2"></div>
+    </div>
+
+    <div id="container">
+      <div class="row"></div>
+      <div class="column">
+        <div id="chart"></div>
+        <div id="chart2"></div>
+        <div id="chart3"></div>
+        <div id="chart7"></div>
+      </div>
+      <div class="column">
+        <div id="chart4"></div>
+        <div id="chart5"></div>
+        <div id="chart6"></div>
+        <div id="chart8"></div>
+      </div>
+    </div>
+    <script type="module" src="filterData2.js"></script>
+  </body>
+</html>

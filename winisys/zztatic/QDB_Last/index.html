@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplikasi Pencarian</title>
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- <script type="module" src="./functionTemp.js" defer></script> -->
+    <script src="./scriptQdb.js" defer></script>
+    <script src="./scriptQdb2.js" defer></script>
+    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <style>
+      body {
+        background-color: #f8f9fa; /* warna formal */
+        padding: 30px;
+      }
+      .container {
+        max-width: 90%;
+        margin: auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      #result {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2 class="mb-4">Pencarian Data</h2>
+      <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Masukkan kata kunci" />
+      </div>
+      <div class="mb-3 d-flex gap-2">
+        <button id="btnGeneral" class="btn btn-primary">Cari General</button>
+        <button id="btnQuality" class="btn btn-secondary">Cari Quality</button>
+      </div>
+      <div id="result">Hasil pencarian ScanFile akan muncul di sini.</div>
+      <div id="result2">Hasil pencarian Temp Recorder akan muncul di sini</div>
+    </div>
+  </body>
+</html>

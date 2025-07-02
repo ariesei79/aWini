@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kanban Notepad</title>
+  <link rel="stylesheet" href="style.css" />
+  <style type="text/css">
+    body {
+            background-image: url(bg.jpg);
+        }    </style>
+ </head>
+
+<body>
+  <!-- Judul Halaman -->
+<div class="kanban-header">
+<h1 style="text-align: center; font-size: 36px; font-weight:bold; color: #0bf1c0;">
+  PE ACTIVITY PLAN
+</h1>
+   <!-- Ikon User -->
+  <div id="icon-panel">
+  <img src="icon/kembali.png" alt="Home" id="home-icon" onclick="location.href='http://172.17.44.106/PE'" style="width: 40px; height: 40px; cursor: pointer; float: left; margin: 10px;" />
+  <img src="icon/user.png" alt="User Icon" id="open-profile"
+       style="width: 40px; height: 40px; cursor: pointer; float: left; margin: 10px;" />
+  <!-- Icon Setting -->
+  <img src="icon/setting.png" alt="Settings" id="open-settings"
+       style="width: 40px; height: 40px; cursor: pointer; float: left; margin: 10px;" />
+  <img src="icon/add.png" alt="Add Note" id="open-add-note"
+       style="width: 40px; height: 40px; cursor: pointer; float: left; margin: 10px;" />
+    </div>
+    </div>
+    <!-- USER PROFILE MODAL -->
+  <div id="user-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-profile">&times;</span>
+      <h3>User Profile</h3>
+      <input type="text" id="user-name" placeholder="Full Name" />
+      <input type="text" id="user-initial-profile" placeholder="Initial (e.g. AB)" maxlength="3" />
+
+      <label for="avatar-select">Choose Avatar</label>
+      <select id="avatar-select"></select>
+      <div id="avatar-preview" style="margin: 10px 0;"></div>
+
+      <label for="note-theme">Choose Note Theme</label>
+      <select id="note-theme">
+        <option value="#fff9b1">Yellow</option>
+        <option value="#c6f1ff">Blue</option>
+        <option value="#d9ffcc">Green</option>
+        <Option value="#ffc0cb">Pinky</Option>
+        <option value="#CC6CE7">Purple</option>
+      </select>
+
+      <button onclick="saveUserProfile()">Save Profile</button>
+    </div>
+  </div>
+
+<!-- MODAL USER LIST (SETTING) -->
+<div id="setting-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" id="close-settings">&times;</span>
+    <h3>Manage Users</h3>
+    <ul id="user-list" style="list-style: none; padding-left: 0;"></ul>
+  </div>
+</div>
+
+<!-- MODAL ADD NOTE -->
+<div id="add-note-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" id="close-add-note">&times;</span>
+    <h3>Add Notepad</h3>
+    <input type="text" id="note-title" placeholder="Note Title" />
+
+    <label for="user-initial">Choose Initial</label>
+    <select id="user-initial">
+      <option value="">-- Select User Initial --</option>
+    </select>
+
+    <button onclick="addNote()">Add Notepad</button>
+  </div>
+</div>
+
+   <!-- KANBAN BOARD -->
+  <div class="kanban-board">
+  <div class="column" data-column="To Do">
+    <div class="column-header">To Do</div>
+    <div class="note-container" id="todo"></div>
+  </div>
+  <div class="column" data-column="In Progress">
+    <div class="column-header">In Progress</div>
+    <div class="note-container" id="inprogress"></div>
+  </div>
+  <div class="column" data-column="Done">
+    <div class="column-header">Done</div>
+    <div class="note-container" id="done"></div>
+  </div>
+</div>
+
+  <script src="script.js"></script>
+</body>
+</html>

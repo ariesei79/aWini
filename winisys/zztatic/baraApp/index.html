@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>PCR Progress Status</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        body, td, th {
+            font-family: Trebuchet MS, Arial, Helvetica, sans-serif;
+        }
+        body {
+            background-image: url(dash.jpg);
+        }
+        .Footer {
+            text-align: center;
+            font-size: 18px;
+            color: #FF0;
+            font-weight: bold;
+        }
+        .draggable {
+            cursor: move;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>PCR Progress Status</h1>
+</header>
+
+<div id="form-container">
+    <form>
+        <input type="text" id="input" maxlength="300" placeholder="Input Judul PCR" autocomplete="off">
+        <button><img src="faplus.png" width="51" height="40"></button>
+    </form>
+</div>
+
+<div class="container-main">
+    <div class="container" id="container-todos">
+        <h1>New item</h1>
+    </div>
+    <div class="container" id="container-Approve">
+        <h1>QA Approve</h1>
+        <h1> ready mp</h1>
+    </div>
+    <div class="container" id="container-doing">
+        <h1>1st Mp</h1>
+    </div>
+    <div class="container" id="container-mp1">
+        <h1>2nd Mp</h1>
+    </div>
+    <div class="container" id="container-mp2">
+        <h1>3rd Mp</h1>
+    </div>
+    <div class="container" id="container-done">
+        <h1>Close</h1>
+    </div>
+</div>
+<h1 class="Footer">&nbsp;</h1>
+<h1 class="Footer"><a href="//172.17.44.106/PE"><img src="home.jpg" width="56" height="37" alt="Home"></a></h1>
+<p class="Footer">HOME</p>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>

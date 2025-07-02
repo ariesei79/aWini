@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>To-Do List</title>
+</head>
+<body>
+  <div class="container">
+    <h1>To-Do List</h1>
+    <p id="current-date" class="date-display"></p> <!-- Elemen untuk menampilkan tanggal saat ini -->
+    <form id="taskForm">
+      <input type="text" id="taskInput" placeholder="Add a new task" required>
+      <button type="submit">Add</button>
+    </form>
+    <ul id="taskList"></ul>
+  </div>
+  <script>
+    // Menampilkan tanggal saat ini
+    const currentDateElement = document.getElementById('current-date');
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const currentDate = new Date().toLocaleDateString(undefined, options);
+    currentDateElement.textContent = `Today's Date: ${currentDate}`;
+  </script>
+  <script>
+    const taskForm = document.getElementById('taskForm');
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+
+    // Fetch Tasks
+    const fetchTasks = async () => {
+      const response = await fetch('/tasks');
+      const tasks = await response.json();
+      taskList.innerHTML = '';
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.dataset.id = task.id;
+        li.innerHTML = `
+          <span>${task.title}</span>
+          <button class="edit">Edit</button>
+          <button class="delete">Delete</button>
+        `;
+        taskList.appendChild(li);
+      });
+    };
+
+    // Add Task
+    taskForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = taskInput.value;
+      await fetch('/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title })
+      });
+      taskInput.value = '';
+      fetchTasks();
+    });
+
+    // Edit or Delete Task
+    taskList.addEventListener('click', async (e) => {
+      const id = e.target.parentElement.dataset.id;
+      if (e.target.classList.contains('edit')) {
+        const newTitle = prompt('Edit task:', e.target.previousElementSibling.textContent);
+        if (newTitle) {
+          await fetch(`/tasks/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: newTitle })
+          });
+          fetchTasks();
+        }
+      } else if (e.target.classList.contains('delete')) {
+        await fetch(`/tasks/${id}`, { method: 'DELETE' });
+        fetchTasks();
+      }
+    });
+
+    // Initial Fetch
+    fetchTasks();
+  </script>
+</body>
+</html>

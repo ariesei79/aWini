@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sumitomo Electric Wintec Indonesia Quality Database System</title>
+    <link rel="icon" type="image/png" href="icon/sumitomo.png" />
+    <style>
+        body {
+            background: url('icon/bg.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            padding-bottom: 50px;
+            margin: 0;
+        }
+
+        /* HEADER */
+        .header-container {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            padding: 10px 0;
+            background: linear-gradient(to right, #ff0000, #ffffff);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .header-logo {
+            width: 90px;
+            margin-right: 10px;
+        }
+
+        .header-text {
+            color: black;
+        }
+
+        .header-top {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .header-bottom {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        #datetime {
+            color: blue;
+            font-size: 22px;
+            margin: 10px;
+            text-align: center;
+            margin-top: 120px;
+        }
+
+        label {
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-right: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        label:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            height: 25px;
+            font-size: 16px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        button {
+            width: 150px;
+            height: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .folder-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+            font-size: 18px;
+        }
+
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        li:hover {
+            background: #e6f2ff;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #333;
+            color: white;
+            font-size: 18px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Modal Styling */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            z-index: 2000;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            z-index: 2100;
+            display: none;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+            border: 3px solid blue;
+            opacity: 0;
+            animation: modalIn 0.5s ease-out forwards;
+        }
+
+        #modalNotification.show {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Animasi untuk modal muncul */
+        @keyframes modalIn {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Animasi untuk tombol OK */
+        #closeModalButton {
+            animation: bounce 0.5s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            label,
+            button,
+            input[type="text"] {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="overlay"></div>
+
+    <!-- HEADER -->
+    <div class="header-container">
+        <div class="header-content">
+            <img src="icon/sumitomo.png" alt="Sumitomo Logo" class="header-logo" />
+            <div class="header-text">
+                <div class="header-top">PT.Sumitomo Electric Wintec Indonesia</div>
+                <div class="header-bottom">Quality Database System</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="datetime"></div>
+
+    <div id="folderPath">Pilih folder untuk menampilkan lokasinya...</div>
+
+    <label for="folderInput">Pilih Folder</label>
+    <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;" />
+
+    <input type="text" id="searchInput" placeholder="Masukkan nama file" />
+    <button id="searchButton">Cari</button>
+
+    <p id="info"></p>
+    <div id="result"></div>
+
+    <!-- Loading Modal -->
+    <div class="modal" id="loadingModal">
+        <h3>Sedang membaca isi folder...</h3>
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div class="modal" id="modalNotification">
+        <div id="modalMessage"></div>
+        <button id="closeModalButton">OK</button>
+    </div>
+
+    <footer>
+        Copyright 2025 Barakids Admin Dashboard. Process Engineering Dept.
+    </footer>
+
+    <script>
+        let savedFiles = null;
+        let folderPathDisplay = document.getElementById("folderPath");
+
+        // Fokuskan input saat halaman dimuat
+        window.onload = function () {
+            document.getElementById("searchInput").focus();
+        };
+
+        function updateDateTime() {
+            let now = new Date();
+            let formattedDate = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            let formattedTime = now.toLocaleTimeString('en-US');
+            document.getElementById('datetime').innerText = formattedDate + ' ' + formattedTime;
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        function toggleInputDisable(disable) {
+            document.getElementById("searchInput").disabled = disable;
+            document.getElementById("searchButton").disabled = disable;
+            document.querySelector("label[for='folderInput']").style.pointerEvents = disable ? "none" : "auto";
+        }
+
+        function showNotification(folderName) {
+            const modal = document.getElementById("modalNotification");
+            const overlay = document.getElementById("overlay");
+
+            const message = `
+                <h3>Berhasil memilih folder: <b>${folderName}</b></h3>
+                <p><strong>Folder berhasil dipilih. Silakan lanjutkan pencarian.</strong></p>
+                <p><strong>フォルダーが正常に選択されました。検索を続行してください。</strong></p>
+                <p><strong>Folder selected successfully. Please continue your search.</strong></p>
+            `;
+            document.getElementById("modalMessage").innerHTML = message;
+
+            modal.classList.add("show");
+            overlay.style.display = "block";
+
+            toggleInputDisable(true);
+            document.getElementById("searchInput").focus();
+        }
+
+        document.getElementById("folderInput").addEventListener("change", function (event) {
+            savedFiles = event.target.files;
+            if (!savedFiles || savedFiles.length === 0) return;
+
+            const folderPath = savedFiles[0].webkitRelativePath.split("/")[0];
+            folderPathDisplay.innerText = "Folder: " + folderPath;
+
+            // Tampilkan loading modal
+            document.getElementById("loadingModal").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+            toggleInputDisable(true);
+
+            setTimeout(() => {
+                // Sembunyikan loading modal dan tampilkan notifikasi
+                document.getElementById("loadingModal").style.display = "none";
+                showNotification(folderPath);
+            }, 1500);
+        });
+
+        document.getElementById("searchButton").addEventListener("click", () => searchFile());
+        document.getElementById("searchInput").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") searchFile();
+        });
+
+        function createObjectURL(file) {
+            // Menambahkan pemulihan URL untuk browser yang tidak mendukung webkit
+            return URL.createObjectURL(file);
+        }
+
+        function searchFile() {
+            const searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();
+            const result = document.getElementById("result");
+            const info = document.getElementById("info");
+
+            if (!savedFiles) {
+                info.innerHTML = "Pilih folder terlebih dahulu.";
+                return;
+            }
+            if (searchQuery === "") {
+                info.innerHTML = "Masukkan nama file yang ingin dicari.";
+                return;
+            }
+
+            const foundFiles = Array.from(savedFiles).filter(file =>
+                file.name.toLowerCase().includes(searchQuery)
+            );
+
+            result.innerHTML = "";
+
+            if (foundFiles.length > 0) {
+                const groupedFiles = {};
+                foundFiles.forEach(file => {
+                    const folderName = file.webkitRelativePath.split('/')[1] || 'Root';
+                    if (!groupedFiles[folderName]) groupedFiles[folderName] = [];
+                    groupedFiles[folderName].push(file);
+                });
+
+                for (const folder in groupedFiles) {
+                    const folderTitle = document.createElement('div');
+                    folderTitle.className = 'folder-title';
+                    folderTitle.textContent = folder;
+                    result.appendChild(folderTitle);
+
+                    const fileList = document.createElement('ul');
+                    groupedFiles[folder].forEach(file => {
+                        const fileItem = document.createElement('li');
+                        const fileLink = document.createElement('a');
+
+                        const fileName = file.name;
+                        fileLink.textContent = fileName; // Menampilkan hanya nama file
+
+                        const fileExtension = fileName.split('.').pop().toLowerCase();
+
+                        if (fileExtension === 'tif' || fileExtension === 'xls' || fileExtension === 'xlsx') {
+                            // Untuk file .tif dan Excel
+                            fileLink.href = createObjectURL(file);
+                            fileLink.download = fileName; // Mengatur nama file saat diunduh
+                        } else if (fileExtension === 'krd') {
+                            // Untuk file .krd
+                            fileLink.href = createObjectURL(file);
+                            fileLink.download = fileName; // Mengatur nama file saat diunduh
+                        } else if (fileExtension === 'jpg') {
+                            // Untuk file .jpg
+                            fileLink.target = "_blank"; // Mengatur untuk buka di tab baru
+                            fileLink.href = createObjectURL(file); // Mengatur link ke file
+                        } else if (fileExtension === 'pdf') {
+                            // Untuk file .pdf
+                            fileLink.target = "_blank"; // Mengatur untuk buka di tab baru
+                            fileLink.href = createObjectURL(file); // Mengatur link ke file
+                        } else {
+                            // Untuk jenis file lainnya
+                            fileLink.href = "#"; // Menetapkan tindakan default
+                        }
+
+                        fileItem.appendChild(fileLink);
+                        fileList.appendChild(fileItem);
+                    });
+                    result.appendChild(fileList);
+                }
+            } else {
+                info.innerHTML = "File tidak ditemukan.";
+            }
+        }
+
+        document.getElementById("closeModalButton").addEventListener("click", () => {
+            document.getElementById("modalNotification").classList.remove("show");
+            document.getElementById("overlay").style.display = "none";
+            toggleInputDisable(false);
+        });
+    </script>
+</body>
+
+</html>
