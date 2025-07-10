@@ -1,0 +1,65 @@
+body {
+  justify-content: center; /* Center the items horizontally */
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background: linear-gradient(to right, #c2b5b5, #ffffff);
+  font-size: 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2cm;
+  color: aliceblue;
+  background-color: black;
+  margin: 0;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.kotak-navigasi {
+  display: flex;
+  height: 190px;
+  margin: 25px; /* Reduced margin for better spacing */
+  background-color: #3f059c;
+  color: rgb(241, 243, 239);
+  justify-content: center;
+  align-items: center;
+  font-size: 1.75rem;
+  border-radius: 10px;
+  text-decoration: none;
+  word-wrap: normal;
+  text-align: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-weight: 300;
+}
+
+a {
+  padding: 1rem;
+}
+
+.kotak-navigasi:hover {
+  background-color: #7445a0;
+}
+
+/* Create 3 rows for the navigation boxes */
+.kotak-navigasi-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  /* flex-wrap: wrap; Allow items to wrap to the next line */
+  justify-content: space-between; /* Space the items evenly */
+  width: 98%; /* Adjust the width as needed */
+  height: 80%;
+  margin: 0 auto; /* Center the container */
+  /* background-image: url("H:\\Project Web\\Online test\\public\\pic.png");
+  background-size: cover; */
+}
+
+/* Ensure that each row has a maximum of 5 columns */
+.kotak-navigasi-container > .kotak-navigasi {
+  flex: 0 0 calc(18% - 50px); /* Each box takes up 20% of the container width minus margin */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}

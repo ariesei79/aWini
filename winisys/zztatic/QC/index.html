@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QI Document</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script>
+      function openPDF(pdfName) {
+        // Membuka file PDF di jendela baru dengan parameter untuk fit to page
+        window.open(pdfName + "#zoom=145", "_blank") // Menggunakan parameter zoom
+      }
+    </script>
+  </head>
+  <body>
+    <span id="judula">
+      <h1 id="main">QI Wire Standard Check</h1>
+    </span>
+    <div class="kotak-navigasi-container">
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/250_NewDF.pdf')">NewMC DF Temp____ 250°</a>
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/250_OldDF.pdf')">OldMC DF Temp____250°</a>
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/270_NewDF.pdf')">NewMC DF Temp____ 280°</a>
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/270_OldDF.pdf')">OldMC DF Temp____280°</a>
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/MTan.pdf')">M-Tan</a>
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/BDV.pdf')">BDV</a>
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/CT1.pdf')">CT-1</a>
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/CR.pdf')">Conductor Resistance</a>
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/Friction.pdf')">Friction</a>
+      <!-- <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('LM400.pdf')">LM400</a> -->
+      <!-- <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('LM986.pdf')">LM986</a> -->
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/Scrape(average).pdf')">Scrape Average</a>
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/Scrape(min).pdf')">Scrape Minimal</a>
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/0.50_Softability.pdf')">Softability WireSize 0.50</a>
+      <a href="javascript:void(0);" class="kotak-navigasi" onclick="openPDF('./public/0.70_Softability.pdf')">Softability WireSize 0.70</a>
+    </div>
+  </body>
+</html>

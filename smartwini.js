@@ -6,7 +6,7 @@ const port = 80
 const bodyParser = require("body-parser")
 const redis = require("redis")
 const cors = require("cors")
-const sql = require("mssql");
+const sql = require("mssql")
 
 app.use(
   cors({
@@ -23,16 +23,17 @@ const config = {
     trustServerCertificate: true,
     enableArithAbort: true,
   },
-};
+}
 
-sql.connect(config)
-  .then(pool => {
-    global.dbPool = pool;
-    console.log("Connected to SQL Server");
+sql
+  .connect(config)
+  .then((pool) => {
+    global.dbPool = pool
+    console.log("Connected to SQL Server")
   })
-  .catch(err => {
+  .catch((err) => {
     console.log("Gagal koneksi Sql")
-  });
+  })
 
 //tambahan dari arie
 const sqlite3 = require("sqlite3").verbose()
@@ -45,7 +46,7 @@ const sqlite3 = require("sqlite3").verbose()
 
 // Menggunakan aplikasi Express dari wini-information (server.js)
 const informationWINIApp = require(path.join(__dirname, "winisys", "WINI-INFORMATION", "server.js"))
-const informationCari = require(path.join(__dirname, "winisys", "cari", "server.js"))
+// const informationCari = require(path.join(__dirname, "winisys", "cari", "server.js"))
 const kanbankuRouter = require(path.join(__dirname, "routes", "kanbanku"))
 
 const mainRoute = require("./routes/main")
@@ -53,7 +54,7 @@ const todoApp = require("./routes/todo")
 const obeyaApp = require("./routes/obeyaRute")
 const trelloApp = require("./routes/trello")
 const qdbApp = require("./routes/qdb")
-const qdbApp2 = require("./routes/qdb2")
+// const qdbApp2 = require("./routes/qdb2")
 const searchRoute = require("./routes/search")
 const checksheet = require("./routes/checksheet")
 const baraAppRoute = require("./routes/baraApp")
@@ -65,6 +66,7 @@ const uploadfile = require("./routes/uploadpdf")
 app.use(express.static(path.join(__dirname, "winisys/zztatic")))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.static(path.join(__dirname, "winisys")))
 
 // Middleware untuk melayani file statis (CSS)
 app.use("/public", express.static(path.join(__dirname, "public")))
@@ -72,9 +74,9 @@ app.use(express.static(path.join(__dirname, "public")))
 app.use("/files/indication-slip", express.static("Q:/Indication Slip"))
 app.use("/files/ids", express.static("Q:/IDS"))
 app.use("/files/worksheet", express.static("Q:/Worksheet"))
-app.use("/files", express.static("Q:\\"))
+// app.use("/files", express.static("Q:\\"))
 app.use("/files", express.static("L:\\"))
-app.use("/files", express.static("L:/"))
+// app.use("/files", express.static("L:/"))
 // app.get("/", async (req, res) => {
 //   const directoryPath = path.join(__dirname, "winisys/zztatic") // folder yang ingin Anda tampilkan
 
@@ -183,19 +185,19 @@ app.use("/files", express.static("L:/"))
 
 // Integrasi aplikasi 'Information Board' di bawah rute '/information-board'
 app.use("/WINI-INFORMATION", informationWINIApp)
-app.use("/cari", informationCari)
+// app.use("/cari", informationCari)
 
 app.use("/", mainRoute)
 app.use("/PE/whiteboard2", todoApp)
 app.use("/PE/whiteboard2", obeyaApp)
 app.use("/QDB_Last", qdbApp)
-app.use("/QDB_Last", qdbApp2)
-app.use("/", searchRoute)
+// app.use("/QDB_Last", qdbApp2)
+// app.use("/", searchRoute)
+app.use("/cari", searchRoute)
 app.use("/kanbanku", kanbankuRouter)
 app.use("/scanku", checksheet)
 app.use("/baraApp", baraAppRoute)
 app.use("/uploadPdf", uploadfile)
-
 
 app.use("/PE_Trello", trelloApp)
 // Menjalankan server

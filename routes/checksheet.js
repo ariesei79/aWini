@@ -112,12 +112,14 @@ router.post("/submit-checksheet", async (req, res) => {
 router.post("/parameter-checked", async (req, res) => {
   const { nama } = req.body;
   const pool = global.dbPool;
+  console.log(nama)
 
   if (!pool) {
     return res.status(500).json({ error: "Database not connected" });
   }
 
   const latestData = getLatestData();
+  console.log(latestData.length)
 
   if (!latestData || latestData.length < 5) {
     return res.status(400).json({ error: "Belum ada data valid dari MQTT" });
